@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Mental Health Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f4f4f9 0%, #e8e5ff 50%, #f4f4f9 100%);
+            color: #333;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,255,0.95));
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: #6d28d9;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #5b21b6;
+            transform: translateX(-3px);
+        }
+
+        /* Main Container */
+        .assessment-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .assessment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .assessment-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .assessment-header p {
+            font-size: 1.1rem;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.1);
+        }
+
+        .progress-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #6d28d9;
+            font-weight: 600;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+
+        .step {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #777;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .step.completed .step-circle {
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+        }
+
+        .step-label {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #777;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #6d28d9;
+            font-weight: 600;
+        }
+
+        /* Assessment Form */
+        .assessment-form {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #6d28d9;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .question-container:hover {
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .response-options {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .response-option {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .response-option input[type="radio"] {
+            display: none;
+        }
+
+        .response-label {
+            display: block;
+            padding: 12px 15px;
+            text-align: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .response-option input[type="radio"]:checked + .response-label {
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+            border-color: #7c3aed;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+        }
+
+        .response-label:hover {
+            border-color: #a78bfa;
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6d28d9, #5b21b6, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6d28d9;
+            border: 2px solid #6d28d9;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            overflow-y: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-section.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.15);
+            max-width: 700px;
+            margin: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result-message {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .result-recommendations {
+            text-align: left;
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .result-recommendations h3 {
+            color: #6d28d9;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .result-recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .result-recommendations li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .result-recommendations li i {
+            color: #7c3aed;
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            border-left: 4px solid #dc2626;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .disclaimer p {
+            color: #7f1d1d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .assessment-header h1 {
+                font-size: 2rem;
+            }
+
+            .progress-steps {
+                justify-content: space-around;
+            }
+
+            .step {
+                width: 50px;
+            }
+
+            .step-label {
+                font-size: 0.7rem;
+            }
+
+            .response-options {
+                flex-direction: column;
+            }
+
+            .response-option {
+                width: 100%;
+            }
+
+            .form-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <span>MindCare</span>
+            </div>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="assessment-container">
+        <div class="assessment-header">
+            <h1>Mental Health Assessment</h1>
+            <p>This confidential assessment will help you gain insights into your mental well-being. Please answer each question honestly based on how you've been feeling in the past two weeks.</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-title">Assessment Progress</div>
+            <div class="progress-steps">
+                <div class="progress-line" id="progressLine"></div>
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Mood</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Anxiety</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Stress</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Focus</div>
+                </div>
+                <div class="step" id="step5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Sleep</div>
+                </div>
+                <div class="step" id="step6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">Social</div>
+                </div>
+                <div class="step" id="step7">
+                    <div class="step-circle">7</div>
+                    <div class="step-label">Activity</div>
+                </div>
+                <div class="step" id="step8">
+                    <div class="step-circle">8</div>
+                    <div class="step-label">Reflection</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Form -->
+        <form id="assessmentForm" class="assessment-form">
+            <!-- Section A: Mood & Emotional Health -->
+            <div class="form-section active" id="sectionA">
+                <h2 class="section-title">A. Mood & Emotional Health</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How emotionally stable do you feel during a typical day?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="a1_1" name="a1" value="1">
+                            <label for="a1_1" class="response-label">Very unstable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a1_2" name="a1" value="2">
+                            <label for="a1_2" class="response-label">Slightly unstable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a1_3" name="a1" value="3">
+                            <label for="a1_3" class="response-label">Moderately stable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a1_4" name="a1" value="4">
+                            <label for="a1_4" class="response-label">Mostly stable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a1_5" name="a1" value="5">
+                            <label for="a1_5" class="response-label">Very stable</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">To what extent do you feel hopeful or optimistic about your future?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="a3_1" name="a3" value="1">
+                            <label for="a3_1" class="response-label">Not at all hopeful</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a3_2" name="a3" value="2">
+                            <label for="a3_2" class="response-label">Slightly hopeful</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a3_3" name="a3" value="3">
+                            <label for="a3_3" class="response-label">Moderately hopeful</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a3_4" name="a3" value="4">
+                            <label for="a3_4" class="response-label">Mostly hopeful</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a3_5" name="a3" value="5">
+                            <label for="a3_5" class="response-label">Extremely hopeful</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How frequently do you feel emotionally exhausted, numb, or detached?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="a4_1" name="a4" value="1">
+                            <label for="a4_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a4_2" name="a4" value="2">
+                            <label for="a4_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a4_3" name="a4" value="3">
+                            <label for="a4_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a4_4" name="a4" value="4">
+                            <label for="a4_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a4_5" name="a4" value="5">
+                            <label for="a4_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you notice sudden or significant changes in your mood?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="a5_1" name="a5" value="1">
+                            <label for="a5_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a5_2" name="a5" value="2">
+                            <label for="a5_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a5_3" name="a5" value="3">
+                            <label for="a5_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a5_4" name="a5" value="4">
+                            <label for="a5_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a5_5" name="a5" value="5">
+                            <label for="a5_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">Overall, how satisfied are you with your life at the present time?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="a6_1" name="a6" value="1">
+                            <label for="a6_1" class="response-label">Very dissatisfied</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a6_2" name="a6" value="2">
+                            <label for="a6_2" class="response-label">Dissatisfied</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a6_3" name="a6" value="3">
+                            <label for="a6_3" class="response-label">Neutral</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a6_4" name="a6" value="4">
+                            <label for="a6_4" class="response-label">Satisfied</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="a6_5" name="a6" value="5">
+                            <label for="a6_5" class="response-label">Very satisfied</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section B: Anxiety & Thought Patterns -->
+            <div class="form-section" id="sectionB">
+                <h2 class="section-title">B. Anxiety & Thought Patterns</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How often do you worry excessively about situations that most people consider manageable?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="b1_1" name="b1" value="1">
+                            <label for="b1_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b1_2" name="b1" value="2">
+                            <label for="b1_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b1_3" name="b1" value="3">
+                            <label for="b1_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b1_4" name="b1" value="4">
+                            <label for="b1_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b1_5" name="b1" value="5">
+                            <label for="b1_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How frequently do you find it difficult to slow down or stop your thoughts when trying to relax?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="b2_1" name="b2" value="1">
+                            <label for="b2_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b2_2" name="b2" value="2">
+                            <label for="b2_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b2_3" name="b2" value="3">
+                            <label for="b2_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b2_4" name="b2" value="4">
+                            <label for="b2_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b2_5" name="b2" value="5">
+                            <label for="b2_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you experience feelings of anxiety without an obvious trigger?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="b3_1" name="b3" value="1">
+                            <label for="b3_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b3_2" name="b3" value="2">
+                            <label for="b3_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b3_3" name="b3" value="3">
+                            <label for="b3_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b3_4" name="b3" value="4">
+                            <label for="b3_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b3_5" name="b3" value="5">
+                            <label for="b3_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you dwell/ inhabit on past events or excessively anticipate future outcomes?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="b4_1" name="b4" value="1">
+                            <label for="b4_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b4_2" name="b4" value="2">
+                            <label for="b4_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b4_3" name="b4" value="3">
+                            <label for="b4_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b4_4" name="b4" value="4">
+                            <label for="b4_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b4_5" name="b4" value="5">
+                            <label for="b4_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How frequently do you feel mentally tense, uneasy, or on edge?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="b5_1" name="b5" value="1">
+                            <label for="b5_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b5_2" name="b5" value="2">
+                            <label for="b5_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b5_3" name="b5" value="3">
+                            <label for="b5_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b5_4" name="b5" value="4">
+                            <label for="b5_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="b5_5" name="b5" value="5">
+                            <label for="b5_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section C: Stress & Pressure Handling -->
+            <div class="form-section" id="sectionC">
+                <h2 class="section-title">C. Stress & Pressure Handling</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How much pressure do you feel from academic, family, or career-related expectations?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="c1_1" name="c1" value="1">
+                            <label for="c1_1" class="response-label">No pressure</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c1_2" name="c1" value="2">
+                            <label for="c1_2" class="response-label">Mild pressure</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c1_3" name="c1" value="3">
+                            <label for="c1_3" class="response-label">Moderate pressure</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c1_4" name="c1" value="4">
+                            <label for="c1_4" class="response-label">High pressure</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c1_5" name="c1" value="5">
+                            <label for="c1_5" class="response-label">Extreme pressure</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you feel overwhelmed by your daily responsibilities?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="c2_1" name="c2" value="1">
+                            <label for="c2_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c2_2" name="c2" value="2">
+                            <label for="c2_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c2_3" name="c2" value="3">
+                            <label for="c2_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c2_4" name="c2" value="4">
+                            <label for="c2_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c2_5" name="c2" value="5">
+                            <label for="c2_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How confident are you in your ability to manage everyday stress effectively?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="c3_1" name="c3" value="1">
+                            <label for="c3_1" class="response-label">Not confident at all</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c3_2" name="c3" value="2">
+                            <label for="c3_2" class="response-label">Slightly confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c3_3" name="c3" value="3">
+                            <label for="c3_3" class="response-label">Moderately confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c3_4" name="c3" value="4">
+                            <label for="c3_4" class="response-label">Mostly confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c3_5" name="c3" value="5">
+                            <label for="c3_5" class="response-label">Extremely confident</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you feel mentally exhausted by the end of the day?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="c4_1" name="c4" value="1">
+                            <label for="c4_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c4_2" name="c4" value="2">
+                            <label for="c4_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c4_3" name="c4" value="3">
+                            <label for="c4_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c4_4" name="c4" value="4">
+                            <label for="c4_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c4_5" name="c4" value="5">
+                            <label for="c4_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do minor problems or setbacks feel more distressing than expected?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="c5_1" name="c5" value="1">
+                            <label for="c5_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c5_2" name="c5" value="2">
+                            <label for="c5_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c5_3" name="c5" value="3">
+                            <label for="c5_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c5_4" name="c5" value="4">
+                            <label for="c5_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="c5_5" name="c5" value="5">
+                            <label for="c5_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section D: Motivation, Focus & Productivity -->
+            <div class="form-section" id="sectionD">
+                <h2 class="section-title">D. Motivation, Focus & Productivity</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How motivated do you feel to begin your day and engage in daily activities?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="d1_1" name="d1" value="1">
+                            <label for="d1_1" class="response-label">Not motivated at all</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d1_2" name="d1" value="2">
+                            <label for="d1_2" class="response-label">Slightly motivated</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d1_3" name="d1" value="3">
+                            <label for="d1_3" class="response-label">Moderately motivated</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d1_4" name="d1" value="4">
+                            <label for="d1_4" class="response-label">Mostly motivated</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d1_5" name="d1" value="5">
+                            <label for="d1_5" class="response-label">Extremely motivated</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you experience difficulty maintaining focus or concentration?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="d2_1" name="d2" value="1">
+                            <label for="d2_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d2_2" name="d2" value="2">
+                            <label for="d2_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d2_3" name="d2" value="3">
+                            <label for="d2_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d2_4" name="d2" value="4">
+                            <label for="d2_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d2_5" name="d2" value="5">
+                            <label for="d2_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How frequently do you delay or avoid important tasks despite knowing their importance?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="d3_1" name="d3" value="1">
+                            <label for="d3_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d3_2" name="d3" value="2">
+                            <label for="d3_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d3_3" name="d3" value="3">
+                            <label for="d3_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d3_4" name="d3" value="4">
+                            <label for="d3_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d3_5" name="d3" value="5">
+                            <label for="d3_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you feel mentally alert and energetic throughout the day?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="d4_1" name="d4" value="1">
+                            <label for="d4_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d4_2" name="d4" value="2">
+                            <label for="d4_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d4_3" name="d4" value="3">
+                            <label for="d4_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d4_4" name="d4" value="4">
+                            <label for="d4_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d4_5" name="d4" value="5">
+                            <label for="d4_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often have you noticed a loss of interest or enjoyment in activities you previously liked?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="d5_1" name="d5" value="1">
+                            <label for="d5_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d5_2" name="d5" value="2">
+                            <label for="d5_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d5_3" name="d5" value="3">
+                            <label for="d5_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d5_4" name="d5" value="4">
+                            <label for="d5_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="d5_5" name="d5" value="5">
+                            <label for="d5_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section E: Sleep & Physical Signals -->
+            <div class="form-section" id="sectionE">
+                <h2 class="section-title">E. Sleep & Physical Signals</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How often do you get sufficient and restorative sleep?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="e1_1" name="e1" value="1">
+                            <label for="e1_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e1_2" name="e1" value="2">
+                            <label for="e1_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e1_3" name="e1" value="3">
+                            <label for="e1_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e1_4" name="e1" value="4">
+                            <label for="e1_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e1_5" name="e1" value="5">
+                            <label for="e1_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How frequently do you feel tired or low in energy even after adequate sleep?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="e2_1" name="e2" value="1">
+                            <label for="e2_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e2_2" name="e2" value="2">
+                            <label for="e2_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e2_3" name="e2" value="3">
+                            <label for="e2_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e2_4" name="e2" value="4">
+                            <label for="e2_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e2_5" name="e2" value="5">
+                            <label for="e2_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often does stress interfere with your sleep quality or routine?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="e3_1" name="e3" value="1">
+                            <label for="e3_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e3_2" name="e3" value="2">
+                            <label for="e3_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e3_3" name="e3" value="3">
+                            <label for="e3_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e3_4" name="e3" value="4">
+                            <label for="e3_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e3_5" name="e3" value="5">
+                            <label for="e3_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you experience physical symptoms (such as headaches, body pain, or fatigue) during periods of stress?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="e4_1" name="e4" value="1">
+                            <label for="e4_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e4_2" name="e4" value="2">
+                            <label for="e4_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e4_3" name="e4" value="3">
+                            <label for="e4_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e4_4" name="e4" value="4">
+                            <label for="e4_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="e4_5" name="e4" value="5">
+                            <label for="e4_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section F: Social Connection & Self-Worth -->
+            <div class="form-section" id="sectionF">
+                <h2 class="section-title">F. Social Connection & Self-Worth</h2>
+                
+                <div class="question-container">
+                    <div class="question-text">How connected do you feel to the people around you?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="f1_1" name="f1" value="1">
+                            <label for="f1_1" class="response-label">Not connected at all</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f1_2" name="f1" value="2">
+                            <label for="f1_2" class="response-label">Slightly connected</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f1_3" name="f1" value="3">
+                            <label for="f1_3" class="response-label">Moderately connected</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f1_4" name="f1" value="4">
+                            <label for="f1_4" class="response-label">Mostly connected</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f1_5" name="f1" value="5">
+                            <label for="f1_5" class="response-label">Very connected</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How comfortable do you feel expressing your emotions to someone you trust?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="f2_1" name="f2" value="1">
+                            <label for="f2_1" class="response-label">Very uncomfortable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f2_2" name="f2" value="2">
+                            <label for="f2_2" class="response-label">Somewhat uncomfortable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f2_3" name="f2" value="3">
+                            <label for="f2_3" class="response-label">Neutral</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f2_4" name="f2" value="4">
+                            <label for="f2_4" class="response-label">Comfortable</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f2_5" name="f2" value="5">
+                            <label for="f2_5" class="response-label">Very comfortable</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How often do you feel lonely or emotionally isolated, even when in the presence of others?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="f3_1" name="f3" value="1">
+                            <label for="f3_1" class="response-label">Never</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f3_2" name="f3" value="2">
+                            <label for="f3_2" class="response-label">Rarely</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f3_3" name="f3" value="3">
+                            <label for="f3_3" class="response-label">Sometimes</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f3_4" name="f3" value="4">
+                            <label for="f3_4" class="response-label">Often</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f3_5" name="f3" value="5">
+                            <label for="f3_5" class="response-label">Almost Always</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">How confident do you feel in your personal abilities and self-worth?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="f4_1" name="f4" value="1">
+                            <label for="f4_1" class="response-label">Not confident at all</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f4_2" name="f4" value="2">
+                            <label for="f4_2" class="response-label">Slightly confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f4_3" name="f4" value="3">
+                            <label for="f4_3" class="response-label">Moderately confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f4_4" name="f4" value="4">
+                            <label for="f4_4" class="response-label">Mostly confident</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f4_5" name="f4" value="5">
+                            <label for="f4_5" class="response-label">Extremely confident</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-text">At present, to what extent do you feel your mental well-being requires attention or improvement?</div>
+                    <div class="response-options">
+                        <div class="response-option">
+                            <input type="radio" id="f5_1" name="f5" value="1">
+                            <label for="f5_1" class="response-label">Not at all</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f5_2" name="f5" value="2">
+                            <label for="f5_2" class="response-label">Slightly</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f5_3" name="f5" value="3">
+                            <label for="f5_3" class="response-label">Moderately</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f5_4" name="f5" value="4">
+                            <label for="f5_4" class="response-label">Significantly</label>
+                        </div>
+                        <div class="response-option">
+                            <input type="radio" id="f5_5" name="f5" value="5">
+                            <label for="f5_5" class="response-label">Urgently</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section G: Activity Tracking -->
+            <div class="form-section" id="sectionActivity">
+                <h2 class="section-title">G. Activity & Wellness Practices</h2>
+                <div class="activity-tracking-card" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(80, 80, 180, 0.07); padding: 32px 24px;">
+                    <p style="color: #666; margin-bottom: 24px; font-size: 1rem;">How many wellness or positive activities have you engaged in this week?</p>
+                    <div class="activity-counter" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                        <button type="button" class="activity-btn" id="decreaseBtn" onclick="decreaseActivity()" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #6a4fcf; background: white; color: #6a4fcf; font-size: 24px; cursor: pointer; font-weight: bold;">−</button>
+                        <div style="text-align: center;">
+                            <input type="number" id="activitiesCompleted" name="activities_completed" value="0" min="0" max="20" style="font-size: 48px; width: 100px; text-align: center; border: none; font-weight: bold; color: #6a4fcf;"/>
+                            <p style="color: #999; margin-top: 8px; font-size: 0.9rem;">Activities completed</p>
+                        </div>
+                        <button type="button" class="activity-btn" id="increaseBtn" onclick="increaseActivity()" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #6a4fcf; background: #6a4fcf; color: white; font-size: 24px; cursor: pointer; font-weight: bold;">+</button>
+                    </div>
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #eee;">
+                        <label style="font-weight: 600; color: #6a4fcf; display: block; margin-bottom: 12px;">Examples of wellness activities:</label>
+                        <ul style="list-style: none; padding: 0; color: #666; font-size: 0.95rem;">
+                            <li style="padding: 6px 0;">✓ Exercise or physical activity (30+ min)</li>
+                            <li style="padding: 6px 0;">✓ Meditation or mindfulness practice</li>
+                            <li style="padding: 6px 0;">✓ Social connection (meaningful conversation)</li>
+                            <li style="padding: 6px 0;">✓ Creative or hobby activities</li>
+                            <li style="padding: 6px 0;">✓ Adequate sleep (7-9 hours)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section H: Experience and Thoughts -->
+            <div class="form-section" id="sectionReflection">
+                <h2 class="section-title" style="margin-bottom: 18px;">G. Experience and Thoughts</h2>
+                <div class="reflection-card" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(80, 80, 180, 0.07); padding: 32px 24px; margin-bottom: 24px;">
+                    <div class="reflection-question-block" style="margin-bottom: 28px;">
+                        <label for="g1" class="reflection-label" style="font-weight: 600; font-size: 1.08rem; color: #6a4fcf; display: block; margin-bottom: 8px;">What kind of thoughts usually occupy your mind when you are alone or not busy?</label>
+                        <textarea id="g1" name="g1" class="open-ended-response" rows="4" placeholder="Type your answer here..." style="width: 100%; border: 1.5px solid #e0e0f7; border-radius: 8px; padding: 12px; font-size: 1rem; background: #f8f7fc;"></textarea>
+                    </div>
+                    <div class="reflection-question-block" style="margin-bottom: 28px;">
+                        <label for="g2" class="reflection-label" style="font-weight: 600; font-size: 1.08rem; color: #6a4fcf; display: block; margin-bottom: 8px;">What are the main things in your life that currently cause you stress or pressure?</label>
+                        <textarea id="g2" name="g2" class="open-ended-response" rows="4" placeholder="Type your answer here..." style="width: 100%; border: 1.5px solid #e0e0f7; border-radius: 8px; padding: 12px; font-size: 1rem; background: #f8f7fc;"></textarea>
+                    </div>
+                    <div class="reflection-question-block">
+                        <label for="g3" class="reflection-label" style="font-weight: 600; font-size: 1.08rem; color: #6a4fcf; display: block; margin-bottom: 8px;">What worries you the most about your present or future?</label>
+                        <textarea id="g3" name="g3" class="open-ended-response" rows="4" placeholder="Type your answer here..." style="width: 100%; border: 1.5px solid #e0e0f7; border-radius: 8px; padding: 12px; font-size: 1rem; background: #f8f7fc;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-navigation">
+                <button type="button" class="btn btn-secondary" id="prevBtn" disabled>
+                    <i class="fas fa-arrow-left"></i>
+                    Previous
+                </button>
+                <button type="button" class="btn btn-primary" id="nextBtn">
+                    Next
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button type="button" class="btn btn-primary" id="formSubmitBtn" style="display: none;">
+                    Submit Assessment
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </form>
+
+        <!-- Result Section -->
+        <div class="result-section" id="resultSection">
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h2 class="result-title">Your Mental Health Assessment Results</h2>
+                <p class="result-message">Thank you for completing the assessment. Based on your responses, we've prepared personalized insights and recommendations to support your mental well-being.</p>
+                
+                <div class="result-recommendations">
+                    <h3>Recommendations</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Practice mindfulness and meditation techniques for 10 minutes daily</li>
+                        <li><i class="fas fa-check-circle"></i> Maintain a regular sleep schedule with 7-9 hours of quality sleep</li>
+                        <li><i class="fas fa-check-circle"></i> Engage in physical activity for at least 30 minutes, 3-5 times a week</li>
+                        <li><i class="fas fa-check-circle"></i> Connect with friends or family members regularly</li>
+                        <li><i class="fas fa-check-circle"></i> Consider speaking with a mental health professional for additional support</li>
+                    </ul>
+                </div>
+                
+                <div class="form-navigation" style="justify-content: center; margin-top: 30px;">
+                    <a href="index.html" class="btn btn-primary" id="dashboardBtn">
+                        Back to Dashboard
+                        <i class="fas fa-home"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- Disclaimer -->
+        <div class="disclaimer">
+            <p>
+                This assessment does not provide medical or psychiatric diagnosis.
+                If you are experiencing significant distress, please consult a
+                qualified mental health professional.
+            </p>
+        </div>
+    </div>
+
+  <script>
+    // Form navigation
+    const sections = ['sectionA', 'sectionB', 'sectionC', 'sectionD', 'sectionE', 'sectionF', 'sectionActivity', 'sectionReflection'];
+    const steps = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7', 'step8'];
+    let currentSection = 0;
+    
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const formSubmitBtn = document.getElementById('formSubmitBtn');
+    const assessmentForm = document.getElementById('assessmentForm');
+    const resultSection = document.getElementById('resultSection');
+    const progressLine = document.getElementById('progressLine');
+    
+    // Initialize form
+    function initForm() {
+        updateProgress();
+        updateNavigationButtons();
+    }
+    
+    // Update progress bar
+    function updateProgress() {
+        const progressPercentage = (currentSection / (sections.length - 1)) * 100;
+        progressLine.style.width = `${progressPercentage}%`;
+        
+        // Update step indicators
+        steps.forEach((stepId, index) => {
+            const step = document.getElementById(stepId);
+            if (index < currentSection) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index === currentSection) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+    }
+    
+    // Update navigation buttons
+    function updateNavigationButtons() {
+        prevBtn.disabled = currentSection === 0;
+        // Show Next button except on last section
+        if (currentSection === sections.length - 1) {
+            nextBtn.style.display = 'none';
+            formSubmitBtn.style.display = 'inline-flex';
+        } else {
+            nextBtn.style.display = 'inline-flex';
+            formSubmitBtn.style.display = 'none';
+        }
+    }
+    
+    // Show section
+    function showSection(index) {
+        // Hide all sections
+        sections.forEach(sectionId => {
+            document.getElementById(sectionId).classList.remove('active');
+        });
+        
+        // Show current section
+        document.getElementById(sections[index]).classList.add('active');
+        
+        // Update current section
+        currentSection = index;
+        
+        // Update UI
+        updateProgress();
+        updateNavigationButtons();
+        
+        // Scroll to top of form
+        assessmentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Validate current section
+    function validateCurrentSection() {
+        const currentSectionElement = document.getElementById(sections[currentSection]);
+        const questions = currentSectionElement.querySelectorAll('input[type="radio"][name]');
+        const questionNames = new Set();
+        
+        questions.forEach(question => {
+            questionNames.add(question.name);
+        });
+        
+        let allAnswered = true;
+        questionNames.forEach(name => {
+            if (!document.querySelector(`input[name="${name}"]:checked`)) {
+                allAnswered = false;
+            }
+        });
+        
+        return allAnswered;
+    }
+    
+    // Calculate assessment scores
+    function calculateAssessmentScores() {
+        const scores = {};
+        
+        // Calculate score for each section
+        sections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            const questions = section.querySelectorAll('input[type="radio"]:checked');
+            let sectionTotal = 0;
+            let questionCount = 0;
+            
+            questions.forEach(question => {
+                sectionTotal += parseInt(question.value);
+                questionCount++;
+            });
+            
+            if (questionCount > 0) {
+                scores[sectionId] = sectionTotal / questionCount;
+            }
+        });
+        
+        return scores;
+    }
+    
+    // Calculate and show results
+    function showResults() {
+        // Hide form and show results as modal
+        assessmentForm.style.display = 'none';
+        resultSection.classList.add('active');
+        
+        // Calculate scores
+        const scores = calculateAssessmentScores();
+        
+        // Update result message based on scores
+        const resultTitle = document.querySelector('.result-title');
+        const resultMessage = document.querySelector('.result-message');
+        const resultRecommendations = document.querySelector('.result-recommendations ul');
+        
+        const overallScore = Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length;
+        
+        let resultText = '';
+        let recommendations = [];
+        
+        if (overallScore <= 1.5) {
+            resultText = 'Excellent Mental Health';
+            resultTitle.textContent = 'Great News - Your Mental Health is Excellent';
+            resultMessage.textContent = 'Based on your responses, you are experiencing excellent mental health. Continue maintaining these positive habits and practices.';
+            recommendations = [
+                '<li><i class="fas fa-check-circle"></i> Maintain your current healthy lifestyle and routines</li>',
+                '<li><i class="fas fa-check-circle"></i> Continue practicing self-care and stress management</li>',
+                '<li><i class="fas fa-check-circle"></i> Keep engaging in activities that bring you joy</li>',
+                '<li><i class="fas fa-check-circle"></i> Stay connected with supportive relationships</li>',
+                '<li><i class="fas fa-check-circle"></i> Consider sharing your success strategies with others</li>'
+            ];
+        } else if (overallScore <= 2.5) {
+            resultText = 'Good Mental Health';
+            resultTitle.textContent = 'Good Mental Health Status';
+            resultMessage.textContent = 'Your mental health is generally good. A few areas can be optimized for better overall well-being.';
+            recommendations = [
+                '<li><i class="fas fa-check-circle"></i> Practice mindfulness and meditation for 10-15 minutes daily</li>',
+                '<li><i class="fas fa-check-circle"></i> Maintain consistent sleep schedule with 7-9 hours nightly</li>',
+                '<li><i class="fas fa-check-circle"></i> Exercise regularly - aim for 30 minutes, 4-5 times per week</li>',
+                '<li><i class="fas fa-check-circle"></i> Strengthen relationships with friends and family</li>',
+                '<li><i class="fas fa-check-circle"></i> Consider journaling to process emotions</li>'
+            ];
+        } else if (overallScore <= 3.5) {
+            resultText = 'Moderate Mental Health Concerns';
+            resultTitle.textContent = 'Moderate Mental Health Support Recommended';
+            resultMessage.textContent = 'Your responses indicate some areas of concern that would benefit from attention and support.';
+            recommendations = [
+                '<li><i class="fas fa-check-circle"></i> Practice daily relaxation techniques (breathing exercises, yoga)</li>',
+                '<li><i class="fas fa-check-circle"></i> Establish a consistent morning and evening routine</li>',
+                '<li><i class="fas fa-check-circle"></i> Increase physical activity to improve mood and energy</li>',
+                '<li><i class="fas fa-check-circle"></i> Reach out to trusted friends or family for support</li>',
+                '<li><i class="fas fa-check-circle"></i> Consider speaking with a therapist or counselor for professional guidance</li>'
+            ];
+        } else {
+            resultText = 'Significant Mental Health Concerns';
+            resultTitle.textContent = 'Professional Support Strongly Recommended';
+            resultMessage.textContent = 'Your responses indicate significant concerns that would greatly benefit from professional mental health support.';
+            recommendations = [
+                '<li><i class="fas fa-check-circle"></i> Schedule an appointment with a mental health professional as soon as possible</li>',
+                '<li><i class="fas fa-check-circle"></i> Reach out to trusted friends or family members about how you\'re feeling</li>',
+                '<li><i class="fas fa-check-circle"></i> If in crisis, contact a crisis helpline or mental health emergency service</li>',
+                '<li><i class="fas fa-check-circle"></i> Practice self-compassion and avoid isolating yourself</li>',
+                '<li><i class="fas fa-check-circle"></i> Establish basic routines (eating, sleeping, moving) even when it\'s difficult</li>'
+            ];
+        }
+        
+        // Update recommendations
+        resultRecommendations.innerHTML = recommendations.join('');
+        
+        // Log results for backend submission
+        console.log('Assessment Results:', {
+            overallScore: overallScore.toFixed(2),
+            category: resultText,
+            scores: scores
+        });
+    }
+    
+    // Function to get current user
+    function getCurrentUser() {
+        const user = localStorage.getItem("mindcare_current_user");
+        return user ? JSON.parse(user) : null;
+    }
+    
+    // --- Check login on page load ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const user = getCurrentUser();
+        console.log("Assessment page - Current user:", user); // Debug line
+        
+        if (!user || !user.id) {
+            alert('Please sign in first!');
+            window.location.href = '/frontend/registration.html';
+            return;
+        }
+    });
+
+    // --- Assessment submission handler ---
+    formSubmitBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        // Disable button to prevent multiple submissions
+        formSubmitBtn.disabled = true;
+        formSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        // Get current user
+        let user = getCurrentUser();
+        if (!user || !user.id) {
+            alert('Please log in before submitting assessment.');
+            window.location.href = 'registration.html';
+            formSubmitBtn.disabled = false;
+            formSubmitBtn.innerHTML = 'Submit Assessment <i class="fas fa-check"></i>';
+            return;
+        }
+        
+        // Collect all form responses
+        const responses = {};
+        sections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            const questions = section.querySelectorAll('input[type="radio"]:checked');
+            questions.forEach(question => {
+                responses[question.name] = question.value;
+            });
+        });
+        
+        // Collect text responses from reflection section
+        const reflectionSection = document.getElementById('sectionReflection');
+        if (reflectionSection) {
+            const textareas = reflectionSection.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                responses[textarea.name] = textarea.value;
+            });
+        }
+        
+        try {
+            // Get activities completed value
+            const activitiesInput = document.getElementById('activitiesCompleted');
+            const activitiesCompleted = activitiesInput ? parseInt(activitiesInput.value) || 0 : 0;
+            
+            // Send to backend
+            const response = await fetch('http://localhost:5000/api/submit-assessment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user.id,
+                    responses: responses,
+                    activities_completed: activitiesCompleted
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Save to user's assessment history
+                if (!user.surveyHistory) user.surveyHistory = [];
+                
+                // Add the new assessment to history
+                const assessmentEntry = {
+                    date: new Date().toISOString(),
+                    score: data.final_score || 0, // Use final_score from backend
+                    status: data.status || 'Completed',
+                    assessmentId: data.assessment_id || Date.now().toString(),
+                    responses: responses
+                };
+                
+                user.surveyHistory.push(assessmentEntry);
+                user.latestScore = data.final_score || 0;
+                
+                // Update localStorage
+                localStorage.setItem('mindcare_current_user', JSON.stringify(user));
+                
+                // Store assessment results for the results page
+                const assessmentResult = {
+                    final_score: data.final_score, // Store as final_score to match backend
+                    score: data.final_score, // Also store as score for compatibility
+                    risk_level: data.risk_level,
+                    recommended_activities: data.recommended_activities,
+                    breakdown: data.breakdown,
+                    emotions: data.emotions,
+                    assessment_id: data.assessment_id,
+                    nlp_prediction: data.nlp_prediction,
+                    nlp_confidence: data.nlp_confidence
+                };
+                localStorage.setItem('mindcare_assessment_result', JSON.stringify(assessmentResult));
+                
+                // Redirect to results page
+                window.location.href = 'results.html';
+            } else {
+                alert('Error submitting assessment: ' + (data.error || 'Unknown error'));
+                formSubmitBtn.disabled = false;
+                formSubmitBtn.innerHTML = 'Submit Assessment <i class="fas fa-check"></i>';
+            }
+        } catch (error) {
+            console.error('Assessment submission error:', error);
+            alert('Error submitting assessment. Please try again.');
+            formSubmitBtn.disabled = false;
+            formSubmitBtn.innerHTML = 'Submit Assessment <i class="fas fa-check"></i>';
+        }
+    });
+    
+    // Activity counter functions
+    function increaseActivity() {
+        const input = document.getElementById('activitiesCompleted');
+        const current = parseInt(input.value) || 0;
+        if (current < 20) {
+            input.value = current + 1;
+        }
+    }
+    
+    function decreaseActivity() {
+        const input = document.getElementById('activitiesCompleted');
+        const current = parseInt(input.value) || 0;
+        if (current > 0) {
+            input.value = current - 1;
+        }
+    }
+    
+    prevBtn.addEventListener('click', () => {
+        if (currentSection > 0) {
+            showSection(currentSection - 1);
+        }
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        if (validateCurrentSection()) {
+            if (currentSection < sections.length - 1) {
+                showSection(currentSection + 1);
+            }
+        } else {
+            // Show validation message
+            const currentSectionElement = document.getElementById(sections[currentSection]);
+            const unansweredQuestions = [];
+            
+            const questions = currentSectionElement.querySelectorAll('input[type="radio"][name]');
+            const questionNames = new Set();
+            
+            questions.forEach(question => {
+                questionNames.add(question.name);
+            });
+            
+            questionNames.forEach(name => {
+                if (!document.querySelector(`input[name="${name}"]:checked`)) {
+                    const questionElement = document.querySelector(`input[name="${name}"]`).closest('.question-container');
+                    const questionText = questionElement.querySelector('.question-text').textContent;
+                    unansweredQuestions.push(questionText);
+                }
+            });
+            
+            alert(`Please answer all questions before proceeding:\n\n${unansweredQuestions.join('\n')}`);
+        }
+    });
+    
+    // Ensure Back to Dashboard button always redirects to dashboard
+    const dashboardBtn = document.getElementById('dashboardBtn');
+    if (dashboardBtn) {
+        dashboardBtn.onclick = function(e) {
+            e.preventDefault();
+            // Ensure user stays logged in
+            let user = getCurrentUser();
+            if (!user || !user.id) {
+                // If user info is missing, try to restore from assessment submission
+                if (data && data.assessment && data.assessment.user_id) {
+                    localStorage.setItem('mindcare_current_user', JSON.stringify({ id: data.assessment.user_id }));
+                }
+            }
+            window.location.href = 'index.html';
+        };
+    }
+    
+    // Initialize form on page load
+    initForm();
+</script>
+</body>
+</html>

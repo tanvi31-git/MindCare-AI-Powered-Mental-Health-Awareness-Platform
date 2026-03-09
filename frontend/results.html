@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - MindCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f4f4f9 0%, #e8e5ff 50%, #f4f4f9 100%);
+            color: #333;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,255,0.95));
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            gap: 8px;
+        }
+
+        /* Main Container */
+        .results-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Results Card */
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0px 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .status-badge.high {
+            background-color: #FEE2E2;
+            color: #DC2626;
+            border-left: 4px solid #DC2626;
+        }
+
+        .status-badge.medium {
+            background-color: #FEF3C7;
+            color: #D97706;
+            border-left: 4px solid #D97706;
+        }
+
+        .status-badge.low {
+            background-color: #DCFCE7;
+            color: #16A34A;
+            border-left: 4px solid #16A34A;
+        }
+
+        .status-badge i {
+            font-size: 1.2rem;
+        }
+
+        /* Results Title */
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1F2937;
+        }
+
+        .results-subtitle {
+            font-size: 1.1rem;
+            color: #6B7280;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Score Display */
+        .score-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #F9FAFB;
+            border-radius: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Separator */
+        .separator {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #E5E7EB, transparent);
+            margin: 30px 0;
+        }
+
+        /* Recommended Activities Section */
+        .activities-section {
+            background: linear-gradient(135deg, #F0F9FF 0%, #F3E8FF 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border-left: 4px solid #8B5CF6;
+        }
+
+        .activities-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activities-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .activity-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #8B5CF6;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .activity-card.high {
+            border-left-color: #DC2626;
+        }
+
+        .activity-card.medium {
+            border-left-color: #D97706;
+        }
+
+        .activity-card.low {
+            border-left-color: #16A34A;
+        }
+
+        .activity-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .activity-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1F2937;
+        }
+
+        .activity-description {
+            font-size: 0.85rem;
+            color: #6B7280;
+            line-height: 1.4;
+        }
+
+        /* Risk Indicators */
+        .risk-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .risk-item {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .risk-item.high {
+            background: #FEE2E2;
+            border: 2px solid #FCA5A5;
+        }
+
+        .risk-item.medium {
+            background: #FEF3C7;
+            border: 2px solid #FCD34D;
+        }
+
+        .risk-item.low {
+            background: #DCFCE7;
+            border: 2px solid #86EFAC;
+        }
+
+        .risk-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .risk-description {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Emergency Banner */
+        .emergency-banner {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #DC2626;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .emergency-banner.show {
+            display: block;
+        }
+
+        .emergency-banner h4 {
+            color: #DC2626;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .emergency-banner p {
+            color: #991B1B;
+            margin-bottom: 10px;
+        }
+
+        .helpline-number {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            color: #DC2626;
+            font-size: 1.1rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #1F2937;
+            border: 2px solid #D1D5DB;
+        }
+
+        .btn-secondary:hover {
+            background: #D1D5DB;
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            background: #B91C1C;
+        }
+
+        /* Breakdown Section */
+        .breakdown-section {
+            margin-top: 30px;
+        }
+
+        .breakdown-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #1F2937;
+        }
+
+        .breakdown-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .breakdown-item {
+            background: #F3F4F6;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .breakdown-item-name {
+            font-size: 0.85rem;
+            color: #6B7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .breakdown-item-score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Footer */
+        .disclaimer {
+            background: #FEF3C7;
+            border-left: 4px solid #D97706;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+            color: #92400E;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #E5E7EB;
+            border-top: 4px solid #8B5CF6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .results-container {
+                padding: 20px 15px;
+            }
+
+            .results-card {
+                padding: 25px;
+            }
+
+            .results-title {
+                font-size: 1.8rem;
+            }
+
+            .score-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .activities-list {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-heart"></i>
+                MindCare
+            </div>
+            <button onclick="logoutUser()" style="background: #E5E7EB; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="results-container">
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading your assessment results...</p>
+        </div>
+
+        <div id="resultsContent" style="display: none;">
+            <!-- Results Card -->
+            <div class="results-card">
+                <!-- Status Badge -->
+                <div id="statusBadge" class="status-badge">
+                    <i class="fas fa-circle"></i>
+                    <span id="statusText">Processing...</span>
+                </div>
+
+                <!-- Title and Subtitle -->
+                <h1 class="results-title" id="resultsTitle">Your Assessment Results</h1>
+                <p class="results-subtitle" id="resultsSubtitle">Loading your personalized results...</p>
+
+                <!-- Emergency Banner (shown only for High Risk) -->
+                <div id="emergencyBanner" class="emergency-banner">
+                    <h4><i class="fas fa-exclamation-circle"></i> Immediate Support Available</h4>
+                    <p>You should consider reaching out to a mental health professional or support service.</p>
+                    <div class="helpline-number">
+                        <i class="fas fa-phone"></i> 24x7 Toll-Free Mental Health Rehabilitation Helpline KIRAN : 1800-599-0019
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">If you're in crisis, please call emergency services or visit your nearest emergency room.</p>
+                </div>
+
+                <!-- Score Display -->
+                <div class="score-container">
+                    <div class="score-item">
+                        <div class="score-value" id="totalScore">--</div>
+                        <div class="score-label">Total Score</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value" id="riskLevel">--</div>
+                        <div class="score-label">Risk Level</div>
+                    </div>
+                </div>
+
+                <!-- Separator -->
+                <div class="separator"></div>
+
+                <!-- Risk Indicators -->
+                <div class="risk-container" id="riskContainer"></div>
+
+                <!-- Separator -->
+                <div class="separator"></div>
+
+                <!-- Recommended Activities Section -->
+                <div class="activities-section">
+                    <h3>
+                        <i class="fas fa-lightbulb"></i>
+                        Recommended Activities Based on Your Results
+                    </h3>
+                    <div class="activities-list" id="activitiesList"></div>
+                </div>
+
+                <!-- Breakdown Section -->
+                <div class="breakdown-section" id="breakdownSection" style="display: none;">
+                    <h3><i class="fas fa-chart-bar"></i> Assessment Breakdown</h3>
+                    <div class="breakdown-items" id="breakdownItems"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        Back to Dashboard
+                    </a>
+                    <button onclick="downloadResults()" class="btn btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Download Report
+                    </button>
+                    <a href="assessment.html" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i>
+                        Take Another Assessment
+                    </a>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="disclaimer">
+                <i class="fas fa-info-circle"></i>
+                <strong>Important Disclaimer:</strong> This assessment does not provide medical or psychiatric diagnosis. If you are experiencing significant distress or mental health concerns, please consult a qualified mental health professional or contact emergency services.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Get assessment results from localStorage or URL params
+        // Store assessment data globally for PDF download
+        let currentAssessmentData = {};
+
+        async function loadResults() {
+            try {
+                // Get assessment data from localStorage
+                const assessmentData = JSON.parse(localStorage.getItem('mindcare_assessment_result') || '{}');
+                
+                if (!assessmentData.score && !assessmentData.risk_level) {
+                    console.error('No assessment data found');
+                    document.getElementById('loadingState').innerHTML = '<p style="color: #DC2626;">No assessment results found. Redirecting to assessment...</p>';
+                    setTimeout(() => window.location.href = 'assessment.html', 2000);
+                    return;
+                }
+
+                // Store assessment data globally for PDF download
+                currentAssessmentData = assessmentData;
+
+                // Display results
+                displayResults(assessmentData);
+                
+                // Keep the data in localStorage for PDF download functionality
+                // It will be cleared when user leaves the page
+            } catch (error) {
+                console.error('Error loading results:', error);
+                document.getElementById('loadingState').innerHTML = '<p style="color: #DC2626;">Error loading results. Please try again.</p>';
+            }
+        }
+
+        function displayResults(data) {
+            const score = data.final_score || data.score || 0;
+            const riskLevel = data.risk_level || 'Unknown';
+            const activities = data.recommended_activities || [];
+            const breakdown = data.breakdown || {};
+            const emotions = data.emotions || {};
+
+            // Determine stress level category based on wellness score (0-100)
+            // 80-100: Excellent (Low Risk)
+            // 60-79: Good (Low Risk)
+            // 40-59: Moderate (Moderate Risk)
+            // 20-39: Concerning (High Risk)
+            // 0-19: Critical (Critical)
+            let stressCategory = 'low';
+            let displayRiskLevel = riskLevel;
+            
+            if (score >= 80) {
+                stressCategory = 'low';
+                displayRiskLevel = 'Excellent';
+            } else if (score >= 60) {
+                stressCategory = 'low';
+                displayRiskLevel = 'Good';
+            } else if (score >= 40) {
+                stressCategory = 'medium';
+                displayRiskLevel = 'Moderate';
+            } else if (score >= 20) {
+                stressCategory = 'high';
+                displayRiskLevel = 'High Risk';
+            } else {
+                stressCategory = 'high';
+                displayRiskLevel = 'Critical';
+            }
+
+            // Update status badge
+            const badge = document.getElementById('statusBadge');
+            badge.className = `status-badge ${stressCategory}`;
+            const statusEmoji = stressCategory === 'high' ? '🔴' : stressCategory === 'medium' ? '🟡' : '🟢';
+            document.getElementById('statusText').textContent = `${statusEmoji} ${displayRiskLevel}`;
+
+            // Update title and subtitle based on classification
+            if (stressCategory === 'high') {
+                document.getElementById('resultsTitle').textContent = '⚠️ High Risk Level';
+                document.getElementById('resultsSubtitle').textContent = 'Your assessment indicates high stress levels that require immediate attention. We recommend reaching out for professional support and implementing stress management strategies right away.';
+                document.getElementById('emergencyBanner').classList.add('show');
+            } else if (stressCategory === 'medium') {
+                document.getElementById('resultsTitle').textContent = '⚠️ Moderate Risk Level';
+                document.getElementById('resultsSubtitle').textContent = 'Your assessment shows moderate stress levels. We recommend implementing regular stress-management activities and maintaining healthy routines. Consider speaking with a counselor if symptoms persist.';
+            } else {
+                document.getElementById('resultsTitle').textContent = '✨ Excellent/Good - Low Risk';
+                document.getElementById('resultsSubtitle').textContent = 'Great news! Your assessment indicates a healthy mental state. Continue maintaining your positive habits and self-care practices.';
+            }
+
+            // Update scores
+            document.getElementById('totalScore').textContent = score;
+            document.getElementById('riskLevel').textContent = displayRiskLevel;
+
+            // Display Risk Indicators
+            displayRiskIndicators(stressCategory, riskLevel);
+
+            // Display Activities
+            displayActivities(activities, stressCategory);
+
+            // Display Breakdown if available
+            if (Object.keys(breakdown).length > 0) {
+                displayBreakdown(breakdown);
+            }
+
+            // Hide loading and show content
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+        }
+
+        function displayRiskIndicators(category, riskLevel) {
+            const container = document.getElementById('riskContainer');
+            container.innerHTML = '';
+
+            const indicators = {
+                high: [
+                    { title: '🔴 High Risk', description: 'Show emergency banner and suggest contacting counselor' },
+                    { title: '📞 Crisis Support', description: 'Access helpline and professional resources' },
+                    { title: '⚡ Immediate Action', description: 'Implement stress management techniques immediately' }
+                ],
+                medium: [
+                    { title: '🟡 Moderate Risk', description: 'Suggest structured stress-reduction activities' },
+                    { title: '📋 Action Plan', description: 'Follow daily wellness and coping strategies' },
+                    { title: '🎯 Progress Track', description: 'Monitor improvement with regular check-ins' }
+                ],
+                low: [
+                    { title: '🟢 Low Risk', description: 'Preventive wellness suggestions' },
+                    { title: '💪 Maintain', description: 'Keep up your healthy habits and routines' },
+                    { title: '📈 Thrive', description: 'Continue growth and personal development' }
+                ]
+            };
+
+            const items = indicators[category] || indicators.low;
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `risk-item ${category}`;
+                div.innerHTML = `
+                    <div class="risk-title">${item.title}</div>
+                    <div class="risk-description">${item.description}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayActivities(activities, category) {
+            const container = document.getElementById('activitiesList');
+            container.innerHTML = '';
+
+            if (!activities || activities.length === 0) {
+                const defaultActivities = {
+                    high: [
+                        { name: 'Call trusted person', icon: '📞', description: 'Reach out to someone you trust' },
+                        { name: 'Guided breathing', icon: '🫁', description: 'Practice breathing exercises' },
+                        { name: 'Grounding exercise', icon: '🌍', description: 'Use grounding techniques to calm' }
+                    ],
+                    medium: [
+                        { name: 'Walk 20 mins', icon: '🚶', description: 'Take a relaxing walk' },
+                        { name: 'Meditation', icon: '🧘', description: 'Practice mindfulness meditation' },
+                        { name: 'Limit screen time', icon: '📵', description: 'Take a digital break' }
+                    ],
+                    low: [
+                        { name: 'Gratitude journaling', icon: '📔', description: 'Write down things you\'re grateful for' },
+                        { name: 'Workout', icon: '💪', description: 'Exercise or physical activity' },
+                        { name: 'Reading', icon: '📚', description: 'Read for pleasure or learning' }
+                    ]
+                };
+
+                activities = defaultActivities[category] || defaultActivities.low;
+            }
+
+            activities.forEach(activity => {
+                const div = document.createElement('div');
+                div.className = `activity-card ${category}`;
+                const activityObj = typeof activity === 'string' ? { name: activity } : activity;
+                const icon = activityObj.icon || '✨';
+                const description = activityObj.description || 'Recommended activity for your well-being';
+                
+                div.innerHTML = `
+                    <div class="activity-icon">${icon}</div>
+                    <div class="activity-name">${activityObj.name}</div>
+                    <div class="activity-description">${description}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayBreakdown(breakdown) {
+            const section = document.getElementById('breakdownSection');
+            const container = document.getElementById('breakdownItems');
+            
+            section.style.display = 'block';
+            container.innerHTML = '';
+
+            // Handle both formatted and raw breakdown formats
+            for (const [key, value] of Object.entries(breakdown)) {
+                let itemName = '';
+                let itemScore = 0;
+                let itemMax = 0;
+                
+                if (typeof value === 'object' && value.name && value.score !== undefined) {
+                    // Formatted breakdown (from app.py)
+                    itemName = value.name;
+                    itemScore = value.score;
+                    itemMax = value.max || 100;
+                } else if (typeof value === 'number') {
+                    // Raw breakdown (just numbers)
+                    itemScore = value;
+                    itemName = key.charAt(0).toUpperCase() + key.slice(1);
+                }
+                
+                if (itemScore !== undefined) {
+                    const div = document.createElement('div');
+                    div.className = 'breakdown-item';
+                    const percentage = itemMax ? ((itemScore / itemMax) * 100).toFixed(0) : itemScore;
+                    div.innerHTML = `
+                        <div class="breakdown-item-name">${itemName}</div>
+                        <div class="breakdown-item-score">${itemScore}${itemMax ? '/' + itemMax : ''}</div>
+                        <div style="font-size: 0.75rem; color: #9CA3AF; margin-top: 5px;">${percentage}%</div>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+        }
+
+        function downloadResults() {
+            // Use stored assessment data for PDF generation
+            const data = currentAssessmentData || {};
+            const score = data.final_score || data.score || 0;
+            const riskLevel = data.risk_level || 'Unknown';
+            const activities = data.recommended_activities || [];
+            const breakdown = data.breakdown || {};
+            const emotions = data.emotions || {};
+
+            // Get title and subtitle from DOM
+            const title = document.getElementById('resultsTitle')?.textContent || 'Assessment Results';
+            const subtitle = document.getElementById('resultsSubtitle')?.textContent || '';
+
+            // Determine color based on score
+            let accentColor = '#16A34A'; // green
+            let bgColor = '#DCFCE7';
+            if (score < 20) {
+                accentColor = '#DC2626'; // red - Critical
+                bgColor = '#FEE2E2';
+            } else if (score < 40) {
+                accentColor = '#DC2626'; // red - High
+                bgColor = '#FEE2E2';
+            } else if (score < 60) {
+                accentColor = '#D97706'; // orange - Moderate
+                bgColor = '#FEF3C7';
+            }
+
+            // Get activities from DOM or use data
+            const activitiesElements = document.querySelectorAll('.activity-card');
+            let activitiesHTML = '';
+            let activitiesFound = false;
+
+            activitiesElements.forEach(el => {
+                const name = el.querySelector('.activity-name')?.textContent || '';
+                const description = el.querySelector('.activity-description')?.textContent || '';
+                if (name) {
+                    activitiesFound = true;
+                    activitiesHTML += `
+                        <div style="margin-bottom: 16px; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid ${accentColor};">
+                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">${name}</div>
+                            <div style="font-size: 13px; color: #6b7280;">${description}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            // If no activities found in DOM, use stored activities
+            if (!activitiesFound && Array.isArray(activities) && activities.length > 0) {
+                activities.forEach(activity => {
+                    const activityObj = typeof activity === 'string' ? { name: activity } : activity;
+                    const icon = activityObj.icon || '✨';
+                    const name = activityObj.name || '';
+                    const description = activityObj.description || 'Recommended activity for your well-being';
+                    
+                    if (name) {
+                        activitiesHTML += `
+                            <div style="margin-bottom: 16px; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid ${accentColor};">
+                                <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">${icon} ${name}</div>
+                                <div style="font-size: 13px; color: #6b7280;">${description}</div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            // Build breakdown section if available
+            let breakdownHTML = '';
+            if (Object.keys(breakdown).length > 0) {
+                breakdownHTML = '<div style="margin-bottom: 30px;"><div style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px;">📊 Assessment Breakdown</div>';
+                for (const [key, value] of Object.entries(breakdown)) {
+                    breakdownHTML += `
+                        <div style="margin-bottom: 12px; padding: 12px; background: #f3f4f6; border-radius: 8px;">
+                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">${key.replace(/_/g, ' ')}</div>
+                            <div style="font-size: 13px; color: #6b7280;">Score: ${value}</div>
+                        </div>
+                    `;
+                }
+                breakdownHTML += '</div>';
+            }
+
+            const htmlContent = `
+                <div style="font-family: 'Arial', sans-serif; padding: 40px; background: white; color: #333;">
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid ${accentColor}; padding-bottom: 30px;">
+                        <div style="font-size: 32px; font-weight: 700; background: linear-gradient(135deg, #8B5CF6, #A78BFA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px;">
+                            MindCare
+                        </div>
+                        <div style="font-size: 14px; color: #6b7280;">Mental Health Assessment Report</div>
+                        <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</div>
+                    </div>
+
+                    <!-- Assessment Status -->
+                    <div style="background: ${bgColor}; border-left: 5px solid ${accentColor}; padding: 24px; border-radius: 8px; margin-bottom: 30px;">
+                        <div style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">${title}</div>
+                        <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">${subtitle}</div>
+                    </div>
+
+                    <!-- Score Section -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px;">
+                        <div style="background: linear-gradient(135deg, ${accentColor}, ${accentColor}dd); color: white; padding: 24px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 40px; font-weight: 700; margin-bottom: 8px;">${score}</div>
+                            <div style="font-size: 14px; opacity: 0.95;">Total Score</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #8B5CF6, #A78BFA); color: white; padding: 24px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">${riskLevel}</div>
+                            <div style="font-size: 14px; opacity: 0.95;">Risk Level</div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Activities -->
+                    <div style="margin-bottom: 30px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px;">
+                            💡 Recommended Activities
+                        </div>
+                        <div>${activitiesHTML || '<div style="color: #6b7280;">No specific activities recommended at this time.</div>'}</div>
+                    </div>
+
+                    <!-- Breakdown Section -->
+                    ${breakdownHTML}
+
+                    <!-- Key Insights -->
+                    <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">📊 Assessment Insights</div>
+                        <ul style="margin: 0; padding-left: 20px; color: #4b5563; font-size: 13px; line-height: 1.8;">
+                            <li>This assessment provides a snapshot of your current mental health status.</li>
+                            <li>Regular assessments can help track your wellness journey and identify patterns.</li>
+                            <li>Consider implementing the recommended activities as part of your daily routine.</li>
+                            <li>Professional support is always available if you need additional help.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Disclaimer -->
+                    <div style="background: #fef3c7; border-left: 4px solid #d97706; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="font-weight: 600; color: #92400e; margin-bottom: 8px;">⚠️ Important Disclaimer</div>
+                        <div style="font-size: 12px; color: #78350f; line-height: 1.6;">
+                            This assessment does not provide medical or psychiatric diagnosis. The results are based on your self-reported responses and should not be considered a professional diagnosis. If you are experiencing significant distress or mental health concerns, please consult a qualified mental health professional or contact emergency services immediately.
+                        </div>
+                        <div style="margin-top: 12px; font-weight: 600; color: #dc2626; font-size: 13px;">
+                            🆘 24x7 Toll-Free Helpline KIRAN: 1800-599-0019
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #9ca3af; font-size: 11px;">
+                        <div>MindCare © 2026 | Confidential Assessment Report</div>
+                        <div style="margin-top: 4px;">This document is for personal use only and should not be shared without consent.</div>
+                    </div>
+                </div>
+            `;
+
+            // Create PDF
+            const element = document.createElement('div');
+            element.innerHTML = htmlContent;
+            
+            const options = {
+                margin: 10,
+                filename: `MindCare-Assessment-${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(options).from(element).save();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('mindcare_current_user');
+            window.location.href = 'registration.html';
+        }
+
+        // Load results when page loads
+        document.addEventListener('DOMContentLoaded', loadResults);
+    </script>
+</body>
+</html>

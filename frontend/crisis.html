@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crisis Support - MindCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fef3f2 0%, #fff5f0 100%);
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        .emergency-banner {
+            background: #fee2e2;
+            border-left: 6px solid #dc2626;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-left-color: #dc2626; }
+            50% { border-left-color: #b91c1c; }
+        }
+
+        .card {
+            transition: all 0.25s ease;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .call-btn {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .call-btn:hover {
+            background: linear-gradient(to right, #059669, #047857);
+            transform: scale(1.05);
+        }
+
+        .heart-pulse {
+            animation: heartbeat 1.8s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-orange-50 min-h-screen font-poppins">
+    <!-- Navigation Bar (similar to index.html) -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-brain text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-semibold text-gray-900">MindCare</span>
+                </div>
+                <a href="index.html" class="text-purple-600 hover:text-purple-800 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Emergency Mode Banner -->
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-8 shadow-md">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle mr-3 text-xl"></i>
+                <p><strong>Emergency Mode:</strong> If you are in immediate danger, call 112 or go to the nearest emergency room.</p>
+            </div>
+        </div>
+
+        <!-- Crisis Resources in Your Region -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i> Crisis Resources in Your Region
+            </h2>
+            <p class="text-gray-600 mb-4">These resources are automatically shown based on your location. If you're in crisis, help is available now.</p>
+            <p class="bg-pink-100 text-pink-700 p-3 rounded-lg mb-4">These services are free, confidential, and available 24/7 in your region.</p>
+            
+            <div class="space-y-4">
+                <!-- KIRAN -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">KIRAN Mental Health Helpline</h3>
+                        <p class="text-sm text-gray-600">Government of India mental health support</p>
+                        <a href="tel:1800-599-0019" class="text-blue-600 font-medium">1800-599-0019</a>
+                    </div>
+                    <a href="https://www.mohfw.gov.in/" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Vandrevala -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">Vandrevala Foundation Helpline</h3>
+                        <p class="text-sm text-gray-600">Professional mental health crisis support and suicide prevention counselling</p>
+                        <a href="tel:9999-666-555" class="text-blue-600 font-medium">9999-666-555</a>
+                    </div>
+                    <a href="https://www.vandrevalafoundation.com/" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- iCall -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">iCall (TISS)</h3>
+                        <p class="text-sm text-gray-600">Counselling services by Tata Institute of Social Sciences</p>
+                        <a href="tel:9152987821" class="text-blue-600 font-medium">9152987821</a>
+                    </div>
+                    <a href="https://icallhelpline.org/" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Tele-MANAS -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">Tele-MANAS</h3>
+                        <p class="text-sm text-gray-600">Government of India mental health program</p>
+                        <a href="tel:14416" class="text-blue-600 font-medium">14416</a> or <a href="tel:1800-891-4416" class="text-blue-600 font-medium">1800-891-4416</a>
+                    </div>
+                    <a href="https://telemanas.mohfw.gov.in/" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Sneha India -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">Sneha India</h3>
+                        <p class="text-sm text-gray-600">Emotional support, suicide prevention, and mental health counselling</p>
+                        <a href="tel:044-24640050" class="text-blue-600 font-medium">044-24640050</a>
+                    </div>
+                    <a href="https://www.snehaindia.org/" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- National Emergency -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">National Emergency Services</h3>
+                        <p class="text-sm text-gray-600">Police, Fire, Medical Emergency - Immediate life-threatening situations</p>
+                        <a href="tel:112" class="text-blue-600 font-medium">112</a>
+                    </div>
+                    <a href="https://www.india.gov.in/national-emergency-number" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                        Visit <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- You Are Not Alone -->
+        <div class="bg-blue-50 rounded-2xl p-8 text-center mb-8 shadow-md">
+            <i class="fas fa-heart text-4xl text-blue-500 mb-4"></i>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">You Are Not Alone</h2>
+            <p class="text-gray-600">Whatever you're going through right now, there are people who care and want to help. These feelings are temporary, and with support, things can get better.</p>
+            <div class="flex justify-center gap-4 mt-6">
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm">24/7 Support</span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm">Free & Confidential</span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm">Safe Space</span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm">Immediate Access</span>
+            </div>
+        </div>
+
+        <!-- All Crisis Resources -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">All Crisis Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Repeat cards similar to region section, but add more if needed -->
+                <!-- Example: National Emergency -->
+                <div class="bg-red-50 rounded-lg p-4">
+                    <i class="fas fa-exclamation-circle text-red-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">National Emergency Services</h3>
+                    <p class="text-sm text-gray-600">Police, Fire, Medical Emergency - Immediate life-threatening situations</p>
+                    <a href="tel:112" class="mt-2 inline-block bg-red-500 text-white px-4 py-2 rounded-full font-medium">Call 112</a>
+                </div>
+
+                <!-- KIRAN -->
+                <div class="bg-pink-50 rounded-lg p-4">
+                    <i class="fas fa-phone-alt text-pink-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">KIRAN Mental Health Helpline</h3>
+                    <p class="text-sm text-gray-600">Government of India mental health support (toll-free)</p>
+                    <a href="tel:1800-599-0019" class="mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-full font-medium">Call 1800-599-0019</a>
+                </div>
+
+                <!-- Vandrevala -->
+                <div class="bg-orange-50 rounded-lg p-4">
+                    <i class="fas fa-headset text-orange-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Vandrevala Foundation Helpline</h3>
+                    <p class="text-sm text-gray-600">Professional mental health crisis support</p>
+                    <a href="tel:9999-666-555" class="mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-full font-medium">Call 9999-666-555</a>
+                    <a href="https://www.vandrevalafoundation.com/" target="_blank" class="ml-2 text-blue-600 text-sm hover:underline">Visit Website</a>
+                </div>
+
+                <!-- iCall -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <i class="fas fa-phone-volume text-blue-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">iCall (TISS)</h3>
+                    <p class="text-sm text-gray-600">Psychosocial counselling services</p>
+                    <a href="tel:9152987821" class="mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-full font-medium">Call 9152987821</a>
+                    <a href="https://icallhelpline.org/" target="_blank" class="ml-2 text-blue-600 text-sm hover:underline">Visit Website</a>
+                </div>
+
+                <!-- Tele-MANAS -->
+                <div class="bg-green-50 rounded-lg p-4">
+                    <i class="fas fa-phone text-green-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Tele-MANAS</h3>
+                    <p class="text-sm text-gray-600">Government of India mental health program (toll-free)</p>
+                    <a href="tel:14416" class="mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-full font-medium">Call 14416</a>
+                    <a href="https://telemanas.mohfw.gov.in/" target="_blank" class="ml-2 text-blue-600 text-sm hover:underline">Visit Website</a>
+                </div>
+
+                <!-- Sneha India -->
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <i class="fas fa-heartbeat text-purple-500 text-2xl mb-2"></i>
+                    <h3 class="font-semibold text-gray-800">Sneha India</h3>
+                    <p class="text-sm text-gray-600">Emotional support and suicide prevention</p>
+                    <a href="tel:044-24640050" class="mt-2 inline-block bg-green-500 text-white px-4 py-2 rounded-full font-medium">Call 044-24640050</a>
+                    <a href="https://www.snehaindia.org/" target="_blank" class="ml-2 text-blue-600 text-sm hover:underline">Visit Website</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- International Resources -->
+        <div class="bg-purple-50 rounded-2xl p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">International Resources</h2>
+            <p class="text-gray-600 mb-4">Support available worldwide if you're traveling or need international help.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold">Crisis Text Line</h3>
+                        <p class="text-sm text-gray-600">Free 24/7 text support in multiple countries</p>
+                    </div>
+                    <a href="https://www.crisistextline.org/" target="_blank" class="text-blue-600 hover:underline flex items-center">Visit Crisis Text Line <i class="fas fa-external-link-alt ml-1"></i></a>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold">Find Help Worldwide</h3>
+                        <p class="text-sm text-gray-600">Locate mental health resources in your country</p>
+                    </div>
+                    <a href="https://findahelpline.com/" target="_blank" class="text-blue-600 hover:underline flex items-center">Find Local Resources <i class="fas fa-external-link-alt ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- If You're in Immediate Danger -->
+        <div class="bg-red-50 rounded-2xl p-6 shadow-lg">
+            <h2 class="text-xl font-bold text-red-700 mb-4 flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i> If You're in Immediate Danger
+            </h2>
+            <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+                <li>Call emergency services (112) immediately if you or someone else is in life-threatening danger.</li>
+                <li>Go to your nearest emergency room or hospital.</li>
+                <li>Call a crisis helpline: KIRAN (1800-599-0019) or Vandrevala Foundation (9999-666-555).</li>
+                <li>Don't stay alone – reach out to a trusted friend, family member, or neighbor.</li>
+                <li>Remove access to means of self-harm and stay in a safe environment.</li>
+            </ol>
+            <p class="mt-4 text-red-600 font-medium flex items-center">
+                <i class="fas fa-heart mr-2"></i> Remember: Crisis situations are temporary. With proper support and treatment, things can and do get better.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

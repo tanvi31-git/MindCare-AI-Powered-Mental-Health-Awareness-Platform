@@ -1,0 +1,306 @@
+/* ------------------------------
+   Global Styling
+------------------------------ */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: #f4f4f9;
+    color: #333;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.active-page {
+    display: block;
+}
+
+.card-shadow {
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ------------------------------
+   Buttons
+------------------------------ */
+
+.btn-primary {
+    background: linear-gradient(to right, #7c3aed, #6d28d9);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #6d28d9, #5b21b6);
+}
+
+.btn-secondary {
+    background: #6d28d9;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #5b21b6;
+}
+
+/* ------------------------------
+   Quote Box
+------------------------------ */
+
+#dailyQuoteText {
+    font-size: 1rem;
+}
+
+#dailyQuoteAuthor {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+#quoteContainer {
+    transition: 0.3s ease;
+}
+
+/* ------------------------------
+   Progress Circle
+------------------------------ */
+
+.progress-ring {
+    width: 160px;
+    height: 160px;
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.5s linear;
+}
+
+/* ------------------------------
+   Activity Cards
+------------------------------ */
+
+.activity-card {
+    transition: 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: scale(1.05);
+}
+
+/* ------------------------------
+   Modals
+------------------------------ */
+
+#activityModal {
+    backdrop-filter: blur(4px);
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------
+   Journal
+------------------------------ */
+
+textarea {
+    outline: none !important;
+}
+
+.open-ended-response {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #bdbdbd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f9f9f9;
+    resize: vertical;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    transition: border-color 0.2s;
+}
+.open-ended-response:focus {
+    border-color: #007bff;
+    background: #fff;
+}
+
+/* ------------------------------
+   Mobile Fixes
+------------------------------ */
+
+@media (max-width: 768px) {
+    .progress-ring {
+        width: 130px;
+        height: 130px;
+    }
+}
+
+/* ------------------------------
+   Auth pages background + overlay
+   Uses `assets/health1.jpg` behind registration & login
+   Apply background on the page container (higher specificity)
+   and reduce overlay opacity so the image is visible.
+------------------------------ */
+
+/* Apply background to the page wrapper (covers full viewport) */
+#registrationPage,
+#loginPage {
+    position: relative;
+    min-height: 100vh;
+    background-image: url('assets/health1.jpg');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Enhanced overlay so the background image reads well behind the auth card */
+#registrationPage::before,
+#loginPage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(59,130,246,0.18));
+    backdrop-filter: blur(4px) saturate(1.05);
+    mix-blend-mode: multiply;
+    z-index: 0;
+}
+
+/* Keep the card above the overlay */
+#registrationPage .card-shadow,
+#loginPage .card-shadow,
+#registrationPage .min-h-screen,
+#loginPage .min-h-screen {
+    position: relative;
+    z-index: 2;
+}
+
+/* Slightly increase overlay on very small screens for contrast */
+@media (max-width: 640px) {
+    #registrationPage::before,
+    #loginPage::before {
+        background: rgba(255,255,255,0.60);
+    }
+}
+
+/* Avatar selection styles */
+.avatar-option {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-option img {
+    transition: transform 0.3s ease;
+}
+
+.avatar-option:hover img {
+    transform: scale(1.05);
+}
+
+.avatar-option.selected img {
+    border: 3px solid rgba(124,58,237,1);
+}
+
+.avatar-option.selected::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    background-color: rgba(124,58,237,1);
+    border-radius: 50%;
+}
+
+.avatar-option.selected::before {
+    content: '✓';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: white;
+    font-size: 12px;
+    line-height: 22px;
+    text-align: center;
+    width: 22px;
+    height: 22px;
+}
+/* ------------------------------
+   Additional auth page styles (from user)
+------------------------------ */
+
+/* Background for Registration Page */
+#registrationPage {
+    position: relative;
+    background-image: url('frontend/assets/health1.jpg'); /* Replace with your actual image path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#registrationPage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.85) 0%, rgba(63, 81, 181, 0.85) 100%);
+    z-index: 1;
+}
+
+#registrationPage .min-h-screen {
+    position: relative;
+    z-index: 2;
+}
+
+/* Background for Login Page */
+#loginPage {
+    position: relative;
+    background-image: url('assets/your-login-background-image.jpg'); /* Replace with your actual image path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#loginPage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.85) 0%, rgba(63, 81, 181, 0.85) 100%);
+    z-index: 1;
+}
+
+#loginPage .min-h-screen {
+    position: relative;
+    z-index: 2;
+}
+
+/* Adjust card appearance for better visibility on background */
+.card-shadow {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* Make the gradient-bg in the form headers more transparent */
+.gradient-bg {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(63, 81, 181, 0.9) 100%);
+}

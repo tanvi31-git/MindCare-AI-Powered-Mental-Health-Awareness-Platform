@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Mental Health Awareness Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #a855f7;
+            --accent: #f97316;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Scroll Progress Bar */
+        #scrollProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* Header */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: white;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        nav a i {
+            font-size: 0.9rem;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            color: white !important;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4) !important;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Hero Section - Updated Style */
+        #hero {
+            margin-top: 80px;
+            min-height: 90vh;
+            background: linear-gradient(135deg, #f4f4f9 0%, #e8e5ff 50%, #f4f4f9 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content {
+            animation: fadeInLeft 1s ease;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .hero-image {
+            position: relative;
+            animation: fadeInRight 1s ease;
+        }
+
+        .hero-image-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Decorative circles for hero */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            bottom: -50px;
+            left: -50px;
+            animation-delay: 2s;
+        }
+
+        .circle-3 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            top: 50%;
+            right: -30px;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Key Findings Section */
+        .findings-section {
+            padding: 5rem 2rem;
+            background: var(--light);
+        }
+
+        .findings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: #6b7280;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .finding-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .finding-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .finding-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .finding-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .stat {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        /* Charts Section - With Awareness Dashboard Heading */
+        .charts-section {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .charts-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .chart-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Data Flow Section - Updated with Accurate MindCare Flow */
+        .data-flow {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+        }
+
+        .flow-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .flow-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .flow-step {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            border-top: 4px solid var(--primary);
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .step-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .flow-step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .flow-step p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 5rem 2rem;
+            background: var(--light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.15);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary-dark);
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: linear-gradient(135deg, #f0f1ff, #f8f9ff);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.open .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .faq-item.open .faq-answer {
+            padding: 1.5rem;
+            max-height: 500px;
+        }
+
+        /* Footer */
+        footer {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-column p, .footer-column li {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 0.3rem 0;
+        }
+
+        .footer-column a:hover {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            nav ul {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s ease;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            nav ul.active {
+                left: 0;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Additional Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <h2>Loading MindCare...</h2>
+        </div>
+    </div>
+
+    <!-- Scroll Progress Bar -->
+    <div id="scrollProgress"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                MindCare
+            </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="nav">
+                <ul>
+                    <li><a href="#hero"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#insights"><i class="fas fa-chart-line"></i> Insights</a></li>
+                    <li><a href="#awareness"><i class="fas fa-lightbulb"></i> Awareness</a></li>
+                    <li><a href="#workflow"><i class="fas fa-cogs"></i> Workflow</a></li>
+                    <li><a href="#features"><i class="fas fa-star"></i> Features</a></li>
+                    <li><a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                     <li><a href="crisis.html"><i class="fas fa-heartbeat mr-1.5"></i> Crisis Help</a></li>
+                     
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section - Updated Style -->
+    <section id="hero" class="hero">
+        <!-- Decorative circles -->
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+        
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Transform Your Mental Health Journey</h1>
+                <p>Empowering college students with AI-powered mental health assessments, personalized insights, and comprehensive support resources.</p>
+                <div class="hero-buttons">
+                    <a href="registration.html" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Get Started
+                    </a>
+                    <a href="#insights" class="btn btn-outline">
+                        <i class="fas fa-chart-bar"></i> View Insights
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-image-container">
+                    <img src="assets/Mental-health.jpg" alt="Mental Health Support">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Findings Section -->
+    <section id="insights" class="findings-section">
+        <div class="findings-container">
+            <div class="section-title">
+                <h2>Key Mental Health Findings</h2>
+                <p>Understanding the challenges college students face in today's high-pressure environment</p>
+            </div>
+            <div class="findings-grid">
+                <div class="finding-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Rising Stress Levels</h3>
+                    <div class="stat">68%</div>
+                    <p>of college students report experiencing significant stress, with academic pressure being the primary contributor.</p>
+                </div>
+                <div class="finding-card">
+                    <h3><i class="fas fa-bed"></i> Sleep Deprivation</h3>
+                    <div class="stat">73%</div>
+                    <p>of students get less than the recommended 8 hours of sleep, directly impacting their mental health and academic performance.</p>
+                </div>
+                <div class="finding-card">
+                    <h3><i class="fas fa-users"></i> Social Isolation</h3>
+                    <div class="stat">45%</div>
+                    <p>of students report feelings of loneliness and social isolation, exacerbated by the transition to college life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section - With Awareness Dashboard Heading -->
+    <section id="awareness" class="charts-section">
+        <div class="charts-container">
+            <div class="section-title">
+                <h2>Awareness Dashboard</h2>
+                <p>Real-time insights into student mental health trends and patterns</p>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Stress Frequency Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="stressChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Sleep Quality vs Stress Levels</h3>
+                    <div class="chart-container">
+                        <canvas id="sleepStressChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Primary Stress Sources</h3>
+                    <div class="chart-container">
+                        <canvas id="stressSourcesChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Barriers to Seeking Help</h3>
+                    <div class="chart-container">
+                        <canvas id="barriersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Flow Section - Updated with Accurate MindCare Flow -->
+    <section id="workflow" class="data-flow">
+        <div class="flow-container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p style="font-size: 1.1rem; color: #666; max-width: 800px; margin: 10px auto 0;">
+                    MindCare uses a sophisticated AI-powered assessment system combining questionnaire scoring with NLP analysis to provide instant, personalized mental health insights
+                </p>
+            </div>
+            <div class="flow-diagram">
+                
+                <!-- Step 1: Sign Up -->
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Create Account</h3>
+                        <p>Secure sign-up with Clerk authentication - your data is encrypted and private</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Take Assessment -->
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Complete Assessment</h3>
+                        <p>Answer structured questions and provide open-ended reflections about your mental state</p>
+                    </div>
+                </div>
+
+                <!-- Step 3: Dual Analysis -->
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>AI-Powered Analysis</h3>
+                        <p>Scoring Engine + NLP Model analyze your responses using machine learning algorithms</p>
+                    </div>
+                </div>
+
+                <!-- Step 4: Risk Classification -->
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Instant Results</h3>
+                        <p>Receive your mental health score (0-100%) with risk level classification</p>
+                    </div>
+                </div>
+
+                <!-- Step 5: Personalized Recommendations -->
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Personalized Care Plan</h3>
+                        <p>Get tailored recommendations, resources, and activities based on your results</p>
+                    </div>
+                </div>
+
+                <!-- Step 6: Track Progress -->
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-area"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>Monitor Your Journey</h3>
+                        <p>Track your mental health trends over time with visual progress charts</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Technical Architecture Highlight -->
+            <div style="margin-top: 60px; padding: 40px; background: linear-gradient(135deg, #f8f9ff, #ffffff); border-radius: 20px; box-shadow: 0 10px 30px rgba(124,58,237,0.1);">
+                <h3 style="text-align: center; font-size: 1.8rem; margin-bottom: 30px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                    Powered by Advanced Technology
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 30px;">
+                    
+                    <div style="text-align: center; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-robot" style="color: white; font-size: 28px;"></i>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 10px; color: #333;">NLP Analysis</h4>
+                        <p style="font-size: 0.9rem; color: #666; line-height: 1.6;">Hugging Face transformer models analyze text responses to detect anxiety, depression, and stress patterns</p>
+                    </div>
+
+                    <div style="text-align: center; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-calculator" style="color: white; font-size: 28px;"></i>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 10px; color: #333;">Scoring Engine</h4>
+                        <p style="font-size: 0.9rem; color: #666; line-height: 1.6;">Scientific algorithm calculates mental health scores based on validated psychological frameworks</p>
+                    </div>
+
+                    <div style="text-align: center; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-project-diagram" style="color: white; font-size: 28px;"></i>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 10px; color: #333;">Decision Engine</h4>
+                        <p style="font-size: 0.9rem; color: #666; line-height: 1.6;">Combines questionnaire and NLP results to provide accurate risk classification and recommendations</p>
+                    </div>
+
+                    <div style="text-align: center; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-database" style="color: white; font-size: 28px;"></i>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin-bottom: 10px; color: #333;">MongoDB Storage</h4>
+                        <p style="font-size: 0.9rem; color: #666; line-height: 1.6;">Secure cloud database stores your assessment history for progress tracking and trend analysis</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="features-container">
+            <div class="section-title">
+                <h2>Powerful Features for Mental Wellness</h2>
+                <p>Comprehensive tools designed to support your mental health journey</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Comprehensive Assessments</h3>
+                    <p>Evidence-based questionnaires covering anxiety, depression, stress, and overall mental well-being.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Insights</h3>
+                    <p>Advanced machine learning algorithms provide personalized insights and recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Tracking</h3>
+                    <p>Monitor your mental health journey with visual charts and trend analysis over time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Educational Resources</h3>
+                    <p>Access a library of articles, videos, and guides on mental health topics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Support Community</h3>
+                    <p>Connect with peers and mental health professionals in a safe, supportive environment.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Privacy & Security</h3>
+                    <p>Your data is encrypted and protected with industry-standard security measures.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <div class="faq-container">
+            <div class="section-title">
+                <h2>Frequently Asked Questions</h2>
+                <p>Everything you need to know about MindCare</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How accurate are the mental health assessments?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Our assessments are based on clinically validated screening tools and have been tested extensively. While they provide valuable insights, they are not a substitute for professional diagnosis. We always recommend consulting with a mental health professional for comprehensive evaluation.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is my data secure and private?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely. We use bank-level encryption to protect your data. All information is stored securely and anonymized for research purposes. We never share your personal data with third parties without your explicit consent.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I use MindCare if I'm already seeing a therapist?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! MindCare is designed to complement professional mental health care. Many users find that tracking their progress between sessions helps them have more productive conversations with their therapists.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How often should I take assessments?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        We recommend taking assessments every 2-4 weeks to track your progress effectively. However, you can take them more frequently if you're experiencing significant changes or want to monitor specific situations.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What should I do if I get a high-risk result?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        If you receive a high-risk result, we provide immediate resources including crisis helplines and guidance on seeking professional help. Remember, these results are indicators, not diagnoses, and reaching out to a mental health professional is the best next step.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MindCare</h3>
+                    <p>Dedicated to promoting mental health awareness and providing tools for self-reflection and support for college students.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/tanvi31-git" aria-label="GitHub" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/tanvi-adke-791518350/" aria-label="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="mailto:tanviadke3105@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#hero"><i class="fas fa-home" style="margin-right: 8px; width: auto;"></i> Home</a></li>
+                        <li><a href="#awareness"><i class="fas fa-chart-bar" style="margin-right: 8px; width: auto;"></i> Awareness Dashboard</a></li>
+                        <li><a href="#features"><i class="fas fa-star" style="margin-right: 8px; width: auto;"></i> Features</a></li>
+                        <li><a href="#"><i class="fas fa-shield-alt" style="margin-right: 8px; width: auto;"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract" style="margin-right: 8px; width: auto;"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="https://www.mhfaindia.com/blog/college-university/student-mental-health-crisis-indian-campuses-support"><i class="fas fa-book" style="margin-right: 8px; width: auto;"></i> Mental Health Guide</a></li>
+                        <li><a href="#"><i class="fas fa-clipboard-check" style="margin-right: 8px; width: auto;"></i> Self-Assessment Tools</a></li>
+                        <li><a href="https://www.soulup.in/"><i class="fas fa-users" style="margin-right: 8px; width: auto;"></i> Support Groups</a></li>
+                        <li><a href="tel:14416" class="text-red-600 font-bold">Emergency: 14416 (Tele-MANAS 24×7)</a></li>
+                        <li><a href="https://www.talktoangel.com/"><i class="fas fa-user-md" style="margin-right: 8px; width: auto;"></i> Professional Directory</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-envelope"></i> tanviadke3105@gmail.com</p>
+                    <p><i class="fas fa-phone"></i> +91 9876543210</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Sanpada College of Commerce and Technology, Sanpada, Navi Mumbai - 40005</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MindCare. All rights reserved. Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for mental wellness</p>
+                <p class="footer-disclaimer">
+                    <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                    MindCare is a mental health awareness tool and does not replace professional diagnosis or treatment.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const nav = document.getElementById('nav');
+        
+        mobileMenuToggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            const icon = mobileMenuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('active');
+                const icon = mobileMenuToggle.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            });
+        });
+
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 5px 30px rgba(0, 0, 0, 0.15)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with animation classes
+        document.querySelectorAll('.finding-card, .chart-card, .feature-card, .flow-step, .faq-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Charts initialization
+        try {
+            // Stress Frequency Chart
+            const stressCtx = document.getElementById('stressChart')?.getContext('2d');
+            if (stressCtx) {
+                new Chart(stressCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
+                        datasets: [{
+                            label: 'Percentage of Students',
+                            data: [2, 12, 18, 38, 30],
+                            backgroundColor: [
+                                'rgba(167,139,250,0.6)',
+                                'rgba(167,139,250,0.6)',
+                                'rgba(167,139,250,0.6)',
+                                'rgba(124,58,237,0.8)',
+                                'rgba(109,40,217,0.9)'
+                            ],
+                            borderColor: [
+                                'rgba(167,139,250,1)',
+                                'rgba(167,139,250,1)',
+                                'rgba(167,139,250,1)',
+                                'rgba(124,58,237,1)',
+                                'rgba(109,40,217,1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 40,
+                                title: {
+                                    display: true,
+                                    text: 'Percentage of Students (%)',
+                                    font: { size: 12 }
+                                },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Sleep vs Stress Chart
+            const sleepCtx = document.getElementById('sleepStressChart')?.getContext('2d');
+            if (sleepCtx) {
+                new Chart(sleepCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['<4 hrs', '4-6 hrs', '6-8 hrs', '>8 hrs'],
+                        datasets: [{
+                            label: 'Average Stress Level',
+                            data: [4.2, 3.8, 2.7, 2.1],
+                            backgroundColor: 'rgba(124,58,237,0.1)',
+                            borderColor: 'rgba(124,58,237,1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: 'rgba(124,58,237,1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Stress Level: ' + context.parsed.y + '/5';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 5,
+                                title: {
+                                    display: true,
+                                    text: 'Average Stress Level (1-5)',
+                                    font: { size: 12 }
+                                },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Stress Sources Chart
+            const sourcesCtx = document.getElementById('stressSourcesChart')?.getContext('2d');
+            if (sourcesCtx) {
+                new Chart(sourcesCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Academic', 'Financial', 'Family', 'Social', 'Health'],
+                        datasets: [{
+                            data: [72, 45, 32, 28, 24],
+                            backgroundColor: [
+                                'rgba(124,58,237,0.8)',
+                                'rgba(139,92,246,0.8)',
+                                'rgba(167,139,250,0.8)',
+                                'rgba(196,181,253,0.8)',
+                                'rgba(221,214,254,0.8)'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 11 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Barriers Chart
+            const barriersCtx = document.getElementById('barriersChart')?.getContext('2d');
+            if (barriersCtx) {
+                new Chart(barriersCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Judgment', 'Time', 'Awareness', 'Cost', 'Stigma'],
+                        datasets: [{
+                            label: 'Percentage of Students',
+                            data: [58, 42, 38, 32, 28],
+                            backgroundColor: [
+                                'rgba(124,58,237,0.8)',
+                                'rgba(139,92,246,0.8)',
+                                'rgba(167,139,250,0.8)',
+                                'rgba(196,181,253,0.8)',
+                                'rgba(221,214,254,0.8)'
+                            ],
+                            borderWidth: 0,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                padding: 12,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 60,
+                                title: {
+                                    display: true,
+                                    text: 'Percentage of Students (%)',
+                                    font: { size: 12 }
+                                },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            y: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Chart initialization failed:', e);
+        }
+
+        // FAQ accordion
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const isOpen = item.classList.contains('open');
+                
+                // Close all items
+                document.querySelectorAll('.faq-item.open').forEach(openItem => {
+                    openItem.classList.remove('open');
+                });
+                
+                // Open clicked item if it wasn't open
+                if (!isOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+
+        // Add floating animation to hero circles
+        document.querySelectorAll('.circle').forEach((circle, index) => {
+            circle.style.animationDelay = `${index * 2}s`;
+        });
+    </script>
+    <a href="crisis.html" class="fixed bottom-6 right-6 z-50 bg-red-600 text-white p-5 rounded-full shadow-2xl hover:bg-red-700 transition transform hover:scale-110 flex items-center justify-center w-16 h-16">
+    <i class="fas fa-phone-volume text-2xl"></i></a>
+</body>
+</html>

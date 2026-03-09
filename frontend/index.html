@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MindCare: Student Mental Health Tracker & Prediction System</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind for layout utilities (keeps your existing look) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth.js"></script>
+
+    <!-- Your custom styles -->
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body style="font-family: 'Poppins', sans-serif;">
+    <!-- Registration and login UI moved to registration.html -->
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="hidden">
+        <!-- Navigation Bar -->
+        <nav class="bg-white shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 flex items-center">
+                            <i class="fas fa-brain text-2xl text-purple-600 mr-2"></i>
+                            <span class="text-xl font-semibold text-gray-1000">MindCare</span>
+                        </div>
+                        <div class="md:ml-10 md:flex md:space-x-8">
+                        <a href="#" onclick="showPage('dashboard')" class="nav-item active inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700" id="navDashboard">Dashboard</a>
+
+                            <a href="assessment.html" class="nav-item inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700">Survey</a>
+                            <a href="#" onclick="showPage('progress')" class="nav-item inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700" id="navProgress">Progress</a>
+                            <a href="#" onclick="showPage('activities')" class="nav-item inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700" id="navActivities">Activities</a>
+                            <a href="crisis.html" class="nav-item inline-flex items-center px-1 pt-1 text-sm font-medium text-red-600"><i class="fas fa-exclamation-triangle mr-1"></i> Crisis Support</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="relative">
+                            <button id="profileMenuBtn" onclick="toggleProfileMenu()" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                <img id="userAvatar" class="h-8 w-8 rounded-full" src="https://picsum.photos/seed/student/100/100.jpg" alt="Profile">
+                            </button>
+                            <div id="profileMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 profile-menu">
+                                <div class="py-1">
+                                    <a href="profile.html" onclick="showPage('profile')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                                    <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Sign out</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Welcome back, <span id="userName">User</span>! 👋</h1>
+                    <p class="text-gray-600 mt-2">Here's your mental health overview for today</p>
+                </div>
+
+                <!-- Hero / intro -->
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
+                    <div class="bg-cover bg-center bg-no-repeat rounded-2xl p-8 card-shadow relative overflow-hidden dashboard-hero-section"
+                         style="background-image: url('assets/psychology-illustration.jpg');">
+                        <div class="absolute inset-0 bg-gradient-to-r from-purple-700/70 to-blue-700/70 rounded-2xl"></div>
+
+                        <div class="relative z-10 text-center text-white">
+                            <h1 class="text-3xl md:text-4xl font-bold mb-4">Welcome to Your Mental Health Journey</h1>
+                            <p class="text-lg md:text-xl max-w-2xl mx-auto">Take control of your wellbeing with personalized insights and recommendations</p>
+
+                            <div class="mt-8">
+                                <a href="assessment.html" class="px-8 py-3 bg-white text-purple-700 font-semibold rounded-full hover:bg-gray-100 transition transform hover:scale-105 inline-block">
+                                    Start Assessment
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Quote Box (new) -->
+                <div class="mb-8">
+                    <div class="bg-white rounded-2xl p-6 card-shadow">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Daily Motivation</h3>
+                                <p id="dailyQuote" class="text-gray-700 italic mb-1">Loading quote...</p>
+                                <p id="dailyQuoteAuthor" class="text-gray-500 text-sm">- Author</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <button id="refreshQuoteBtn" class="px-4 py-2 btn-secondary text-white rounded-xl">Refresh Quote</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Your Progress and Achievements Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Current Status - Enhanced with Mental Wellness Score -->
+                    <div class="bg-white rounded-3xl p-8 card-shadow">
+                        <div class="text-center">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Mental Wellness</h3>
+                            <div class="relative inline-flex items-center justify-center mb-4">
+                                <svg class="progress-ring" width="160" height="160">
+                                    <circle cx="80" cy="80" r="70" stroke="#E5E7EB" stroke-width="12" fill="none"></circle>
+                                    <circle id="dashboardProgressCircle" class="progress-ring-circle" cx="80" cy="80" r="70" 
+                                            stroke="url(#dashboardGradient)" stroke-width="12" fill="none"
+                                            stroke-dasharray="439.6" stroke-dashoffset="439.6"
+                                            style="transition: stroke-dashoffset 1s ease;">
+                                    </circle>
+                                    <defs>
+                                        <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="dashboardScore" class="text-4xl font-bold text-purple-600">--</span>
+                                    <span class="text-sm text-gray-600">Score</span>
+                                </div>
+                            </div>
+                            <p id="dashboardLabel" class="text-2xl font-bold text-gray-800 mb-2">--</p>
+                            <p id="dashboardSummary" class="text-gray-600 text-sm">Take an assessment to get your wellness score</p>
+                        </div>
+                    </div>
+
+                    <!-- Your Progress -->
+                    <div class="bg-white rounded-3xl p-8 card-shadow">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6">Your Progress</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between p-4 bg-orange-50 rounded-2xl">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-fire text-orange-500 text-2xl"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Current Streak</p>
+                                        <p id="currentStreak" class="text-2xl font-bold text-orange-600">0 days</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-4 bg-green-50 rounded-2xl">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-trophy text-green-500 text-2xl"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Activities Done</p>
+                                        <p id="activitiesDone" class="text-2xl font-bold text-green-600">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-2xl">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-star text-blue-500 text-2xl"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Most Visited</p>
+                                        <p id="mostVisited" class="text-2xl font-bold text-blue-600">Mindfulness</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 card-shadow">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6">Achievements</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl">
+                                <div class="w-16 h-16 mx-auto mb-2 bg-yellow-200 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-medal text-yellow-600 text-2xl"></i>
+                                </div>
+                                <p class="text-xs font-semibold text-gray-700">First Step</p>
+                                <p class="text-xs text-gray-600">Completed first assessment</p>
+                            </div>
+                            
+                            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
+                                <div class="w-16 h-16 mx-auto mb-2 bg-purple-200 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-brain text-purple-600 text-2xl"></i>
+                                </div>
+                                <p class="text-xs font-semibold text-gray-700">Mind Master</p>
+                                <p class="text-xs text-gray-600">5 mindfulness activities</p>
+                            </div>
+                            
+                            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
+                                <div class="w-16 h-16 mx-auto mb-2 bg-green-200 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                                </div>
+                                <p class="text-xs font-semibold text-gray-700">Consistent</p>
+                                <p class="text-xs text-gray-600">7-day streak</p>
+                            </div>
+                            
+                            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
+                                <div class="w-16 h-16 mx-auto mb-2 bg-blue-200 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-heart text-blue-600 text-2xl"></i>
+                                </div>
+                                <p class="text-xs font-semibold text-gray-700">Self Care</p>
+                                <p class="text-xs text-gray-600">10 activities completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activities</h3>
+                    <div class="space-y-3" id="recentActivitiesList">
+                        <!-- JS will populate recent activities -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Page -->
+        <div id="result" class="page">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="bg-white rounded-2xl p-8 card-shadow">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mb-4">
+                            <i class="fas fa-check text-white text-4xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Assessment Complete!</h2>
+                        <p class="text-gray-600">Here's your mental health analysis</p>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Your Mental Health Status</h3>
+                                <p id="resultStatus" class="text-3xl font-bold text-purple-600">Mild Stress</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600 mb-1">Overall Score</p>
+                                <p id="resultScore" class="text-2xl font-bold text-gray-800">72/100</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-xl p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Motivational Message</h3>
+                        <p id="motivationalMessage" class="text-gray-700">Remember that it's okay to not be okay sometimes. You're taking positive steps by monitoring your mental health. Keep going, and don't hesitate to reach out for support when you need it.</p>
+                    </div>
+
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="showPage('progress')" class="px-6 py-2 btn-secondary text-white rounded-xl">
+                            View Progress
+                        </button>
+                        <button onclick="showPage('activities')" class="px-6 py-2 btn-primary text-white rounded-xl">
+                            Explore Activities
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Page -->
+        <div id="progress" class="page">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Your Progress</h1>
+                    <p class="text-gray-600 mt-2">Track your mental health journey over time</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-6 card-shadow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Weekly Progress</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 card-shadow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Monthly Progress</h3>
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Current Streak</h3>
+                            <i class="fas fa-fire text-orange-500 text-xl"></i>
+                        </div>
+                        <p id="streakCount" class="text-3xl font-bold text-purple-600">0 days</p>
+                        <p class="text-sm text-gray-600 mt-2">Keep it up!</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Average Score</h3>
+                            <i class="fas fa-chart-line text-blue-500 text-xl"></i>
+                        </div>
+                        <p id="averageScore" class="text-3xl font-bold text-blue-600">0/100</p>
+                        <p class="text-sm text-gray-600 mt-2">Tracked over time</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 card-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Activities Completed</h3>
+                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        </div>
+                        <p id="activitiesCompleted" class="text-3xl font-bold text-green-600">0</p>
+                        <p class="text-sm text-gray-600 mt-2">This month</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Detailed Progress</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">Stress Management</span>
+                                <span id="detailStress" class="text-sm text-gray-600">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="barStress" class="bg-purple-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">Sleep Quality</span>
+                                <span id="detailSleep" class="text-sm text-gray-600">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="barSleep" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">Mood Stability</span>
+                                <span id="detailMood" class="text-sm text-gray-600">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="barMood" class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">Physical Activity</span>
+                                <span id="detailActivity" class="text-sm text-gray-600">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="barActivity" class="bg-yellow-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Page -->
+        <div id="activities" class="page">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Activities & Affirmations</h1>
+                </div>
+
+                <!-- AI-Powered Daily Affirmation -->
+                <div class="bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 rounded-2xl p-8 card-shadow relative overflow-hidden mb-8">
+                    <div class="absolute inset-0 bg-white opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-sparkles text-yellow-500 mr-3 text-3xl"></i>
+                                Your AI Daily Affirmation
+                            </h3>
+                            <button onclick="generateAIAffirmation()" class="text-purple-600 hover:text-purple-800 transition">
+                                <i class="fas fa-sync-alt text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="bg-white bg-opacity-90 rounded-2xl p-8 shadow-inner">
+                            <p id="aiAffirmation" class="text-2xl leading-relaxed text-gray-800 font-medium text-center italic">
+                                "Today is a new beginning. You are stronger than you think."
+                            </p>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600">Personalized just for you based on your recent responses</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended Activities -->
+                <div class="mb-12">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Recommended Activities</h3>
+                    <p class="text-gray-600 mb-8">Click on any activity to see personalized recommendations</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Mindfulness Meditation -->
+                        <div class="ai-activity-card" data-category="mindfulness">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-brain text-purple-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Mindfulness Meditation</h4>
+                                <p class="text-sm text-gray-600 mb-6">Practice mindfulness to reduce stress and improve focus.</p>
+                                <button onclick="openModal('mindfulness')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium py-3 rounded-xl hover:from-purple-600 hover:to-purple-700 transition shadow-md">
+                                    See Recommendations →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Creative Expression -->
+                        <div class="ai-activity-card" data-category="creative">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-palette text-blue-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Creative Expression</h4>
+                                <p class="text-sm text-gray-600 mb-6">Express yourself through art, music, or writing.</p>
+                                <button onclick="openModal('creative')" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition shadow-md">
+                                    Explore Ideas →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Physical Exercise -->
+                        <div class="ai-activity-card" data-category="exercise">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-dumbbell text-green-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Physical Exercise</h4>
+                                <p class="text-sm text-gray-600 mb-6">Boost your mood with regular physical activity.</p>
+                                <button onclick="openModal('exercise')" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-medium py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition shadow-md">
+                                    Get Started →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Social Connection -->
+                        <div class="ai-activity-card" data-category="social">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-users text-yellow-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Social Connection</h4>
+                                <p class="text-sm text-gray-600 mb-6">Connect with friends and build supportive relationships.</p>
+                                <button onclick="openModal('social')" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-medium py-3 rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition shadow-md">
+                                    Connect Now →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Self-Care Routine -->
+                        <div class="ai-activity-card" data-category="selfcare">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-heart text-pink-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Self-Care Routine</h4>
+                                <p class="text-sm text-gray-600 mb-6">Develop a personalized self-care routine for daily wellness.</p>
+                                <button onclick="openModal('selfcare')" class="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-medium py-3 rounded-xl hover:from-pink-600 hover:to-pink-700 transition shadow-md">
+                                    Build Routine →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Learning & Growth -->
+                        <div class="ai-activity-card" data-category="learning">
+                            <div class="activity-card bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105">
+                                <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-book-open text-indigo-600 text-2xl"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 text-lg mb-2">Learning & Growth</h4>
+                                <p class="text-sm text-gray-600 mb-6">Expand your knowledge and develop new skills.</p>
+                                <button onclick="openModal('learning')" class="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-medium py-3 rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition shadow-md">
+                                    Explore Topics →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Activity Modal -->
+                 <div id="activityModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
+     style="display:none;">
+                    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
+                        <div id="modalHeader" class="bg-gradient-to-r from-purple-500 to-indigo-500 p-8 text-white rounded-t-3xl">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 id="modalTitle" class="text-3xl font-bold mb-2"></h3>
+                                    <p id="modalSubtitle" class="text-lg opacity-90"></p>
+                                </div>
+                                <button onclick="closeModal()" class="text-white hover:text-gray-200 text-4xl transition">&times;</button>
+                            </div>
+                        </div>
+                        <div id="modalContent" class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                    </div>
+                </div>
+
+                <!-- Journal Entry -->
+                <div class="bg-white rounded-2xl p-6 card-shadow mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Journal Entry</h3>
+                    <textarea id="journalText" class="w-full p-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500" rows="5" placeholder="Write about your day, thoughts, or feelings..."></textarea>
+                    <div class="flex justify-between mt-4">
+                        <div class="flex space-x-2">
+                            <button id="journalMoodBtn" class="text-gray-500 hover:text-gray-700" title="Add mood"><i class="fas fa-smile"></i></button>
+                            <button id="journalImageBtn" class="text-gray-500 hover:text-gray-700" title="Attach image"><i class="fas fa-image"></i></button>
+                            <button id="journalTagBtn" class="text-gray-500 hover:text-gray-700" title="Add tag"><i class="fas fa-tag"></i></button>
+                        </div>
+                        <button id="saveJournalBtn" class="px-4 py-2 btn-primary text-white rounded-xl">Save Entry</button>
+                    </div>
+                </div>
+
+                <!-- Mood Tracker -->
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Mood Tracker</h3>
+                    <div class="grid grid-cols-7 gap-2 mb-4">
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Mon</p><div class="w-full h-20 bg-green-100 rounded-lg flex items-center justify-center"><i class="fas fa-smile text-green-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Tue</p><div class="w-full h-20 bg-yellow-100 rounded-lg flex items-center justify-center"><i class="fas fa-meh text-yellow-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Wed</p><div class="w-full h-20 bg-green-100 rounded-lg flex items-center justify-center"><i class="fas fa-smile text-green-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Thu</p><div class="w-full h-20 bg-yellow-100 rounded-lg flex items-center justify-center"><i class="fas fa-meh text-yellow-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Fri</p><div class="w-full h-20 bg-green-100 rounded-lg flex items-center justify-center"><i class="fas fa-smile text-green-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Sat</p><div class="w-full h-20 bg-blue-100 rounded-lg flex items-center justify-center"><i class="fas fa-laugh text-blue-500 text-xl"></i></div></div>
+                        <div class="text-center"><p class="text-xs text-gray-500 mb-2">Sun</p><div class="w-full h-20 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"><i class="fas fa-plus text-gray-400"></i></div></div>
+                    </div>
+                    <p class="text-sm text-gray-600 text-center">Click on a day to log your mood</p>
+                </div>
+            </div>
+        </div>
+
+                <!-- Main script (auth.js loads first from head section) -->
+                <script src="script.js"></script>
+        <style>
+        .hidden { display: none; }
+        .dropdown {
+                position: absolute;
+                background: white;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                border-radius: 8px;
+                right: 0;
+        }
+        </style>
+        <script>
+        // Ensure user name is shown in welcome message
+    function updateWelcomeUserName() {
+        const user = JSON.parse(localStorage.getItem('mindcare_current_user'));
+        if (user && user.name) {
+            document.getElementById('userName').textContent = user.name;
+        }
+    }
+
+    // Toggle profile menu
+    function toggleProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        if (menu) menu.classList.toggle('hidden');
+    }
+
+    // Show page and update nav
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => {
+            p.style.display = 'none';
+            p.classList.remove('active');
+        });
+        const page = document.getElementById(pageId);
+        if (page) {
+            page.style.display = 'block';
+            page.classList.add('active');
+        }
+        document.querySelectorAll('.nav-item').forEach(item =>
+            item.classList.remove('active')
+        );
+        const navMap = {
+            dashboard: 'navDashboard',
+            progress: 'navProgress',
+            activities: 'navActivities'
+        };
+        if (navMap[pageId]) {
+            document.getElementById(navMap[pageId]).classList.add('active');
+        }
+        // Update user name on dashboard
+        if (pageId === 'dashboard') updateWelcomeUserName();
+        // Update progress section when shown
+        if (pageId === 'progress') {
+            initCharts();
+        }
+        
+    }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('mindcare_current_user'));
+    if (user && user.id) {
+        document.getElementById('appContainer').classList.remove('hidden');
+        document.getElementById('userName').textContent = user.name;
+        // Load other dashboard data...
+    } else {
+        window.location.replace('registration.html');
+    }
+});
+    // Update user name on load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Index.html DOMContentLoaded');
+        
+        // --- Auth/session check ---
+        let user = null;
+        try {
+            const userStr = localStorage.getItem('mindcare_current_user');
+            console.log('Raw user from localStorage:', userStr);
+            
+            if (userStr) {
+                user = JSON.parse(userStr);
+                console.log('Parsed user:', user);
+            }
+        } catch (e) {
+            console.error('Error parsing user:', e);
+        }
+        
+        const appContainer = document.getElementById('appContainer');
+        
+        // Check if user has valid structure with required fields
+        if (user && user.id && user.name && appContainer) {
+            console.log('✓ User authenticated, showing app');
+            appContainer.classList.remove('hidden');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const dash = document.getElementById('dashboard');
+            if (dash) dash.classList.add('active');
+            updateWelcomeUserName();
+        } else {
+            console.log('✗ No valid user found, redirecting to registration');
+            window.location.replace('registration.html');
+            return;
+        }
+
+        // --- Populate Dashboard Wellness Score Card from surveyHistory ---
+        function updateDashboardScore() {
+            const freshUser = JSON.parse(localStorage.getItem('mindcare_current_user'));
+            const surveyHistory = (freshUser && freshUser.surveyHistory) || [];
+
+            const scoreEl    = document.getElementById('dashboardScore');
+            const labelEl    = document.getElementById('dashboardLabel');
+            const summaryEl  = document.getElementById('dashboardSummary');
+            const circleEl   = document.getElementById('dashboardProgressCircle');
+
+            if (surveyHistory.length === 0) {
+                if (scoreEl)   scoreEl.textContent  = '--';
+                if (labelEl)   labelEl.textContent  = '--';
+                if (summaryEl) summaryEl.textContent = 'Take an assessment to get your wellness score';
+                return;
+            }
+
+            // Latest assessment is the last entry
+            const latestScore = surveyHistory[surveyHistory.length - 1].score;
+
+            // Update score number
+            if (scoreEl) scoreEl.textContent = latestScore;
+
+            // Animate progress ring (circumference = 2π×70 ≈ 439.6)
+            if (circleEl) {
+                const circumference = 439.6;
+                const offset = circumference - (latestScore / 100) * circumference;
+                circleEl.style.strokeDashoffset = offset;
+            }
+
+            // Risk label + summary
+            let label, summary, color;
+            if (latestScore >= 80) {
+                label = 'Excellent'; summary = 'Your mental wellness is excellent. Keep it up!'; color = '#10B981';
+            } else if (latestScore >= 60) {
+                label = 'Good'; summary = 'You are doing well. Continue your positive habits.'; color = '#6366F1';
+            } else if (latestScore >= 40) {
+                label = 'Moderate'; summary = 'Some areas need attention. Try self-care activities.'; color = '#F59E0B';
+            } else if (latestScore >= 20) {
+                label = 'Concerning'; summary = 'You may benefit from professional support.'; color = '#EF4444';
+            } else {
+                label = 'Critical'; summary = 'Please reach out to a mental health professional immediately.'; color = '#DC2626';
+            }
+
+            if (labelEl)   { labelEl.textContent = label; labelEl.style.color = color; }
+            if (summaryEl) summaryEl.textContent = summary;
+            if (scoreEl)   scoreEl.style.color = color;
+        }
+        updateDashboardScore();
+
+        // --- Daily Quote Logic ---
+        document.getElementById("refreshQuoteBtn")?.addEventListener("click", function() {
+            if (typeof refreshQuote === "function") refreshQuote();
+        });
+        if (typeof displayDailyQuote === "function") displayDailyQuote();
+
+        // --- Profile Dropdown Logic ---
+        const avatar = document.getElementById("userAvatar");
+        const dropdown = document.getElementById("profileMenu");
+        avatar?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("hidden");
+        });
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".profile-menu")) {
+                dropdown.classList.add("hidden");
+            }
+        });
+        document.getElementById("logoutBtn")?.addEventListener("click", () => {
+            localStorage.removeItem("mindcare_current_user");
+            window.location.href = "registration.html";
+        });
+
+        
+    });
+        </script>
+        <!-- Added Scripts for Quotes, Affirmations, and Activities -->
+        <script>
+            // Array of quotes with authors (at least 20)
+            const quotes = [
+                { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+                { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
+                { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+                { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+                { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+                { text: "Health is the greatest possession. Contentment is the greatest treasure.", author: "Lao Tzu" },
+                { text: "The greatest wealth is health.", author: "Virgil" },
+                { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+                { text: "Motivation is what gets you started. Habit is what keeps you going.", author: "Jim Ryun" },
+                { text: "Your health is an investment, not an expense.", author: "Unknown" },
+                { text: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
+                { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+                { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+                { text: "A healthy outside starts from the inside.", author: "Robert Urich" },
+                { text: "To keep the body in good health is a duty... otherwise we shall not be able to keep our mind strong and clear.", author: "Buddha" },
+                { text: "Good health and good sense are two of life's greatest blessings.", author: "Publilius Syrus" },
+                { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+                { text: "The harder the battle, the sweeter the victory.", author: "Les Brown" },
+                { text: "Dream big and dare to fail.", author: "Norman Vaughan" },
+                { text: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+                { text: "Health is not valued till sickness comes.", author: "Thomas Fuller" },
+                { text: "An apple a day keeps the doctor away.", author: "Proverb" }
+            ];
+
+            // Function to refresh quote
+            function refreshQuote() {
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                const quote = quotes[randomIndex];
+                document.getElementById('dailyQuote').textContent = quote.text;
+                document.getElementById('dailyQuoteAuthor').textContent = `- ${quote.author}`;
+            }
+
+            // Initial quote load
+            refreshQuote();
+
+            // Attach event listener to refresh button
+            document.getElementById('refreshQuoteBtn').addEventListener('click', refreshQuote);
+
+            // Array of affirmations (at least 20 for success, motivation, health)
+            const affirmations = [
+                "I am capable of achieving great things.",
+                "Every day, I am getting stronger and healthier.",
+                "Success is in my future because I work hard today.",
+                "I choose to be happy and healthy every day.",
+                "My body is healthy, my mind is brilliant, my soul is tranquil.",
+                "I am motivated to succeed in all my endeavors.",
+                "I radiate confidence, self-respect, and inner harmony.",
+                "I am worthy of all the good things life has to offer.",
+                "My potential to succeed is limitless.",
+                "I nourish my body with healthy food and positive thoughts.",
+                "I am surrounded by people who encourage and support healthy choices.",
+                "I am grateful for my healthy body and mind.",
+                "Success flows to me effortlessly.",
+                "I am motivated, persistent, and successful.",
+                "I deserve to be healthy and happy.",
+                "My health is improving every day.",
+                "I am strong, capable, and successful.",
+                "I choose health, vitality, and well-being.",
+                "I am driven by passion and purpose.",
+                "My body heals itself, and I feel better every day.",
+                "I attract success by being my authentic self.",
+                "I am full of energy and vitality.",
+                "Success is my natural state.",
+                "I take care of my body, and it takes care of me.",
+                "I am motivated to make positive changes in my life."
+            ];
+
+            // Function to generate AI affirmation
+            function generateAIAffirmation() {
+                const randomIndex = Math.floor(Math.random() * affirmations.length);
+                document.getElementById('aiAffirmation').textContent = `"${affirmations[randomIndex]}"`;
+            }
+
+            // Initial affirmation load
+            generateAIAffirmation();
+
+            // Activities per category (at least 10 each)
+            const activities = {
+                mindfulness: [
+                    "Practice deep breathing for 5 minutes.",
+                    "Do a body scan meditation.",
+                    "Try mindful walking in nature.",
+                    "Listen to guided meditation audio.",
+                    "Practice gratitude journaling.",
+                    "Engage in mindful eating.",
+                    "Do yoga poses for relaxation.",
+                    "Visualize a peaceful place.",
+                    "Practice progressive muscle relaxation.",
+                    "Meditate on loving-kindness.",
+                    "Observe your thoughts without judgment.",
+                    "Try a 10-minute silent meditation.",
+                    "Focus on your senses in the present moment."
+                ],
+                creative: [
+                    "Draw or sketch something inspiring.",
+                    "Write a short story or poem.",
+                    "Play a musical instrument.",
+                    "Create a vision board.",
+                    "Try photography of everyday objects.",
+                    "Paint with watercolors.",
+                    "Craft something with recycled materials.",
+                    "Compose a song.",
+                    "Design a digital artwork.",
+                    "Write in a creative journal.",
+                    "Sculpt with clay.",
+                    "Experiment with cooking new recipes.",
+                    "Create handmade cards."
+                ],
+                exercise: [
+                    "Go for a brisk walk.",
+                    "Do a home workout routine.",
+                    "Practice yoga.",
+                    "Ride a bicycle.",
+                    "Try jumping rope.",
+                    "Do strength training with weights.",
+                    "Participate in a dance class.",
+                    "Go hiking.",
+                    "Swim laps.",
+                    "Play a sport like tennis.",
+                    "Do Pilates exercises.",
+                    "Run or jog outdoors.",
+                    "Try circuit training."
+                ],
+                social: [
+                    "Call a friend for a chat.",
+                    "Join a club or group activity.",
+                    "Volunteer in your community.",
+                    "Host a game night.",
+                    "Attend a social event.",
+                    "Share a meal with family.",
+                    "Write a letter to a loved one.",
+                    "Participate in team sports.",
+                    "Join an online community.",
+                    "Organize a group outing.",
+                    "Mentor someone.",
+                    "Attend a workshop with others.",
+                    "Collaborate on a project."
+                ],
+                selfcare: [
+                    "Take a relaxing bath.",
+                    "Read a book for pleasure.",
+                    "Get a good night's sleep.",
+                    "Practice skincare routine.",
+                    "Listen to your favorite music.",
+                    "Meditate or do deep breathing.",
+                    "Cook a healthy meal.",
+                    "Spend time in nature.",
+                    "Journal your thoughts.",
+                    "Do a digital detox.",
+                    "Pamper yourself with a massage.",
+                    "Set boundaries for work-life balance.",
+                    "Practice positive self-talk."
+                ],
+                learning: [
+                    "Read an educational book.",
+                    "Take an online course.",
+                    "Learn a new language.",
+                    "Watch educational videos.",
+                    "Practice a new skill.",
+                    "Attend a lecture or webinar.",
+                    "Explore a new hobby.",
+                    "Study history or science.",
+                    "Learn to code.",
+                    "Read articles on personal development.",
+                    "Take notes on a podcast.",
+                    "Experiment with new ideas.",
+                    "Join a study group."
+                ]
+            };
+
+            // Function to open modal with activities
+            function openModal(category) {
+                const modal = document.getElementById('activityModal');
+                const header = document.getElementById('modalHeader');
+                const title = document.getElementById('modalTitle');
+                const subtitle = document.getElementById('modalSubtitle');
+                const content = document.getElementById('modalContent');
+
+                // Category styling with colors and icons
+                const categoryStyles = {
+                    mindfulness: {
+                        gradient: 'from-purple-500 to-indigo-500',
+                        icon: 'fa-brain',
+                        description: 'Calm your mind and reduce stress'
+                    },
+                    creative: {
+                        gradient: 'from-blue-500 to-cyan-500',
+                        icon: 'fa-palette',
+                        description: 'Express yourself through creativity'
+                    },
+                    exercise: {
+                        gradient: 'from-green-500 to-emerald-500',
+                        icon: 'fa-dumbbell',
+                        description: 'Boost your energy and mood'
+                    },
+                    social: {
+                        gradient: 'from-yellow-500 to-orange-500',
+                        icon: 'fa-users',
+                        description: 'Connect with others and build relationships'
+                    },
+                    selfcare: {
+                        gradient: 'from-pink-500 to-rose-500',
+                        icon: 'fa-heart',
+                        description: 'Nurture yourself and practice self-love'
+                    },
+                    learning: {
+                        gradient: 'from-indigo-500 to-purple-500',
+                        icon: 'fa-book-open',
+                        description: 'Expand your knowledge and grow'
+                    }
+                };
+
+                const style = categoryStyles[category] || categoryStyles.mindfulness;
+                const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
+
+                // Update header styling
+                header.className = `bg-gradient-to-r ${style.gradient} p-8 text-white rounded-t-3xl`;
+                title.innerHTML = `<i class="fas ${style.icon} mr-3"></i>${categoryTitle}`;
+                subtitle.textContent = style.description;
+
+                // Clear content
+                content.innerHTML = '';
+
+                // Get activities for this category
+                const activityList = activities[category] || [];
+
+                // Create activity cards
+                activityList.forEach((activity, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5 hover:shadow-lg transition transform hover:scale-105 cursor-pointer border-2 border-transparent hover:border-purple-300';
+                    card.innerHTML = `
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <input type="checkbox" class="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer">
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-gray-800 font-medium leading-relaxed">${activity}</p>
+                                <p class="text-xs text-gray-500 mt-2">⏱️ 5-15 minutes</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <button onclick="markActivityComplete(event)" class="bg-white text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full w-8 h-8 flex items-center justify-center transition font-semibold">→</button>
+                            </div>
+                        </div>
+                    `;
+                    content.appendChild(card);
+                });
+
+                // Add motivation section at the bottom
+                const motivationSection = document.createElement('div');
+                motivationSection.className = 'md:col-span-2 mt-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6 border-l-4 border-purple-500';
+                motivationSection.innerHTML = `
+                    <h4 class="font-semibold text-gray-800 mb-2">💡 Tip:</h4>
+                    <p class="text-sm text-gray-600">Choose an activity that resonates with you today. Even 5 minutes of practice can make a difference in your mental wellness!</p>
+                `;
+                content.appendChild(motivationSection);
+
+                modal.style.display = 'flex';
+            }
+
+            // Function to mark activity complete
+            function markActivityComplete(event) {
+                event.stopPropagation();
+                const button = event.target.closest('button');
+                const card = button.closest('div').parentElement.parentElement;
+                card.style.opacity = '0.5';
+                button.textContent = '✓';
+                button.className = 'bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, 500);
+            }
+// Initialize charts
+        let weeklyChart = null;
+        let monthlyChart = null;
+        
+        function initCharts() {
+            try {
+                // Weekly chart
+                const weeklyCtx = document.getElementById('weeklyChart');
+                if (!weeklyCtx) return;
+                
+                if (weeklyChart !== null && typeof weeklyChart.destroy === 'function') {
+                    weeklyChart.destroy();
+                }
+                
+                weeklyChart = new Chart(weeklyCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Mental Health Score',
+                            data: [72, 75, 73, 78, 80, 76, 78],
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 60,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+                
+                // Monthly chart
+                const monthlyCtx = document.getElementById('monthlyChart');
+                if (!monthlyCtx) return;
+                
+                if (monthlyChart !== null && typeof monthlyChart.destroy === 'function') {
+                    monthlyChart.destroy();
+                }
+                
+                monthlyChart = new Chart(monthlyCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Average Score',
+                            data: [70, 73, 75, 78],
+                            backgroundColor: [
+                                'rgba(139, 92, 246, 0.7)',
+                                'rgba(59, 130, 246, 0.7)',
+                                'rgba(16, 185, 129, 0.7)',
+                                'rgba(251, 191, 36, 0.7)'
+                            ],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 60,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
+        }
+
+            // Function to close modal
+            function closeModal() {
+                document.getElementById('activityModal').style.display = 'none';
+            }
+        </script>
+</body>
+<a href="crisis.html" class="fixed bottom-6 right-6 z-50 bg-red-600 text-white p-5 rounded-full shadow-2xl hover:bg-red-700 transition transform hover:scale-110 flex items-center justify-center w-16 h-16">
+    <i class="fas fa-phone-volume text-2xl"></i>
+</a>
+</html>

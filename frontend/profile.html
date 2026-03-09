@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - MindCare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .badge {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            border-left: 2px solid #e5e7eb;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .streak-flame {
+            animation: flicker 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation (copy from index.html) -->
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-6">
+                <a href="index.html" class="text-lg font-semibold text-purple-600">
+                    MindCare
+                </a>
+
+                <a href="index.html" class="text-gray-700">Dashboard</a>
+                <a href="assessment.html" class="text-gray-700">Survey</a>
+                <a href="index.html#progress" class="text-gray-700">Progress</a>
+                <a href="index.html#activities" class="text-gray-700">Activities</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Back to Dashboard Link -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <a href="index.html" class="inline-flex items-center text-purple-600 hover:text-purple-800 transition">
+            <i class="fas fa-arrow-left mr-2"></i>
+            <span class="font-medium">Back to Dashboard</span>
+        </a>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Profile Header -->
+        <div class="profile-header rounded-3xl shadow-2xl mb-8 overflow-hidden">
+            <div class="relative z-10 p-8 md:p-12">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <!-- Profile Photo -->
+                    <div class="relative group">
+                        <img id="profilePhoto" src="https://ui-avatars.com/api/?name=User&background=8B5CF6&color=fff&size=200" 
+                             class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl object-cover transition-transform group-hover:scale-105" 
+                             alt="Profile Photo" />
+                        <button onclick="openPhotoUpload()" 
+                                class="absolute bottom-0 right-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-purple-600 hover:bg-purple-600 hover:text-white transition-all">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <input id="photoUpload" type="file" accept="image/*" class="hidden" onchange="updatePhoto(event)" />
+                    </div>
+                    
+                    <!-- Profile Info -->
+                    <div class="flex-1 text-center md:text-left text-white">
+                        <h1 id="profileName" class="text-4xl md:text-5xl font-bold mb-2">User Name</h1>
+                        <p id="profileEmail" class="text-xl opacity-90 mb-4">user@email.com</p>
+                        <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+                            <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm backdrop-blur-sm">
+                                <i class="fas fa-calendar-alt mr-2"></i>Member since <span id="memberSince">Feb 2026</span>
+                            </span>
+                            <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm backdrop-blur-sm">
+                                <i class="fas fa-chart-line mr-2"></i><span id="totalAssessments">0</span> Assessments
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="flex gap-3">
+                        <button onclick="resetPassword()" 
+                                class="px-6 py-3 bg-white text-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all">
+                            <i class="fas fa-key mr-2"></i>Reset Password
+                        </button>
+                        <button onclick="logoutUser()" 
+                                class="px-6 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mental Wellness Dashboard -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Current Status -->
+            <div class="gradient-card rounded-3xl p-8 shadow-xl">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Mental Wellness</h3>
+                    <div class="relative inline-flex items-center justify-center mb-4">
+                        <svg class="progress-ring" width="160" height="160">
+                            <circle cx="80" cy="80" r="70" stroke="#E5E7EB" stroke-width="12" fill="none"></circle>
+                            <circle id="progressCircle" class="progress-ring-circle" cx="80" cy="80" r="70" 
+                                    stroke="url(#gradient)" stroke-width="12" fill="none"
+                                    stroke-dasharray="439.6" stroke-dashoffset="439.6"
+                                    style="transition: stroke-dashoffset 1s ease;">
+                            </circle>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="mhScore" class="text-4xl font-bold text-purple-600">--</span>
+                            <span class="text-sm text-gray-600">Score</span>
+                        </div>
+                    </div>
+                    <p id="mhLabel" class="text-2xl font-bold text-gray-800 mb-2">--</p>
+                    <p id="mhSummary" class="text-gray-600 text-sm">Take an assessment to get your wellness score</p>
+                </div>
+            </div>
+
+            <!-- Streak & Goals -->
+            <div class="gradient-card rounded-3xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Your Progress</h3>
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between p-4 bg-orange-50 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-fire text-orange-500 text-xl streak-flame"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Current Streak</p>
+                                <p id="activityStreak" class="text-2xl font-bold text-gray-800">0 days</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 bg-green-50 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-trophy text-green-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Activities Done</p>
+                                <p id="activitiesCount" class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-star text-blue-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Most Visited</p>
+                                <p id="topActivity" class="text-lg font-bold text-gray-800">Mindfulness</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement Badges -->
+            <div class="gradient-card rounded-3xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Achievements</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl badge">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-yellow-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-medal text-yellow-600 text-2xl"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-gray-700">First Step</p>
+                        <p class="text-xs text-gray-600">Completed first assessment</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl badge" style="animation-delay: 0.2s;">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-purple-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-brain text-purple-600 text-2xl"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-gray-700">Mind Master</p>
+                        <p class="text-xs text-gray-600">5 mindfulness activities</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl badge" style="animation-delay: 0.4s;">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-green-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-gray-700">Consistent</p>
+                        <p class="text-xs text-gray-600">7-day streak</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl badge" style="animation-delay: 0.6s;">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-blue-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-heart text-blue-600 text-2xl"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-gray-700">Self Care</p>
+                        <p class="text-xs text-gray-600">10 activities completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wellness Trends -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Score Trends Chart -->
+            <div class="gradient-card rounded-3xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Score Trends (Last 30 Days)</h3>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="gradient-card rounded-3xl p-8 shadow-xl">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Your Statistics</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="stat-card p-6 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl">
+                        <p class="text-sm text-gray-700 mb-1">Average Score</p>
+                        <p id="avgScore" class="text-3xl font-bold text-purple-600">--</p>
+                    </div>
+                    <div class="stat-card p-6 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl">
+                        <p class="text-sm text-gray-700 mb-1">Best Score</p>
+                        <p id="bestScore" class="text-3xl font-bold text-green-600">--</p>
+                    </div>
+                    <div class="stat-card p-6 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl">
+                        <p class="text-sm text-gray-700 mb-1">Lowest Score</p>
+                        <p id="lowScore" class="text-3xl font-bold text-red-600">--</p>
+                    </div>
+                    <div class="stat-card p-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl">
+                        <p class="text-sm text-gray-700 mb-1">Improvement</p>
+                        <p id="improveScore" class="text-3xl font-bold text-blue-600">--</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                        <span class="font-semibold">Insight:</span>
+                    </p>
+                    <p id="insightText" class="text-sm text-gray-600">
+                        Keep tracking your mental health consistently to see meaningful patterns and improvements.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment History -->
+        <div class="gradient-card rounded-3xl p-8 shadow-xl mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Assessment History</h3>
+                <a href="assessment.html" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-plus mr-2"></i>New Assessment
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left p-4 font-semibold text-gray-700">Date</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Score</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Status</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable" class="divide-y divide-gray-100">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="noHistory" class="text-center py-12">
+                <i class="fas fa-clipboard-list text-gray-300 text-6xl mb-4"></i>
+                <p class="text-gray-500 text-lg mb-4">No assessment history yet</p>
+                <a href="assessment.html" class="inline-block px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition">
+                    Take Your First Assessment
+                </a>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="gradient-card rounded-3xl p-8 shadow-xl">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Recent Activity</h3>
+            <div id="activityTimeline" class="space-y-6">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div id="noActivity" class="text-center py-12">
+                <i class="fas fa-history text-gray-300 text-6xl mb-4"></i>
+                <p class="text-gray-500 text-lg">No recent activity to show</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load profile data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+            const user_id = user.id; 
+            fetch(`http://localhost:5000/api/user/${user_id}`)   .then(r => r.json())  
+             .then(data => {     
+                if (!data.success) return; 
+                    const profile = data.user; 
+                         document.getElementById('totalAssessments').textContent =       profile.assessments_taken || '0';   
+                            if (profile.latest_assessment) {       const score = profile.latest_assessment.score || '--';   
+                                document.getElementById('mhScore').textContent = score;       updateProgressRing(score);    
+                                   setRiskLabel(profile.latest_assessment.risk_level);   
+                                  }   });
+        });
+// Fetch real history, populate table + chart
+fetch(`http://localhost:5000/api/user-history/${user.id}`)
+  .then(r => r.json())
+  .then(data => {
+    const assessments = data.assessments || [];
+    if (assessments.length === 0) {
+      document.getElementById('noHistory').style.display = 'block';
+      return;
+    }
+    document.getElementById('noHistory').style.display = 'none';
+
+    // Map API data to what loadHistoryTable() expects
+    const mapped = assessments.map(a => ({
+      date: a.timestamp,
+      score: a.questionnaire?.score || 0,
+      status: a.final_result?.risk_level || 'Unknown'
+    }));
+    loadHistoryTable(mapped);
+    loadTrendsChart(mapped);
+  });
+        
+  function loadProfile() {
+  const user = JSON.parse(
+    localStorage.getItem('mindcare_current_user')
+  );
+  if (!user) { window.location.href = 'registration.html'; return; }
+
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('profilePhoto').src =
+    user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=8B5CF6&color=fff`;
+  
+  // Member since: derive from user.created_at or default
+  const since = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-US', {month:'short', year:'numeric'})
+    : 'Recently';
+  document.getElementById('memberSince').textContent = since;
+  
+        
+            // Update profile header
+            document.getElementById('profileName').textContent = user.name || 'User';
+            document.getElementById('profileEmail').textContent = user.email || '';
+            if (user.avatar) {
+                document.getElementById('profilePhoto').src = user.avatar;
+            }
+
+            // Member since date (use registration date if available, otherwise show Feb 2026)
+            const memberDate = user.registrationDate ? new Date(user.registrationDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Feb 2026';
+            document.getElementById('memberSince').textContent = memberDate;
+
+            // Survey history stats
+            const surveyHistory = user.surveyHistory || [];
+            document.getElementById('totalAssessments').textContent = surveyHistory.length;
+
+            if (surveyHistory.length > 0) {
+                const scores = surveyHistory.map(s => s.score);
+                const latestScore = scores[scores.length - 1];
+                const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                const bestScore = Math.max(...scores);
+                const lowScore = Math.min(...scores);
+                const improvement = scores.length > 1 ? scores[scores.length - 1] - scores[0] : 0;
+
+                // Update wellness score
+                document.getElementById('mhScore').textContent = latestScore;
+                updateProgressRing(latestScore);
+                
+                // Determine status
+                let status = 'Excellent';
+                let summary = 'Your mental health is in great shape! Keep up the great work.';
+                if (latestScore < 40) {
+                    status = 'Needs Attention';
+                    summary = 'Consider reaching out for professional support.';
+                } else if (latestScore < 60) {
+                    status = 'Fair';
+                    summary = 'Focus on self-care and stress management techniques.';
+                } else if (latestScore < 80) {
+                    status = 'Good';
+                    summary = 'You\'re doing well! Continue your positive habits.';
+                }
+                
+                document.getElementById('mhLabel').textContent = status;
+                document.getElementById('mhSummary').textContent = summary;
+
+                // Update stats
+                document.getElementById('avgScore').textContent = avgScore;
+                document.getElementById('bestScore').textContent = bestScore;
+                document.getElementById('lowScore').textContent = lowScore;
+                document.getElementById('improveScore').textContent = (improvement >= 0 ? '+' : '') + improvement;
+
+                // Generate insight
+                if (improvement > 10) {
+                    document.getElementById('insightText').textContent = 'Amazing progress! You\'ve improved significantly. Keep up the great work!';
+                } else if (improvement > 0) {
+                    document.getElementById('insightText').textContent = 'You\'re on the right track! Small improvements add up over time.';
+                } else if (improvement < -10) {
+                    document.getElementById('insightText').textContent = 'Your scores have declined. Consider seeking support or trying new coping strategies.';
+                } else {
+                    document.getElementById('insightText').textContent = 'Your scores are stable. Continue monitoring and practicing self-care.';
+                }
+
+                // Load chart
+                loadTrendsChart(surveyHistory);
+                
+                // Load history table
+                loadHistoryTable(surveyHistory);
+                
+                // Hide "no history" message
+                document.getElementById('noHistory').style.display = 'none';
+            } else {
+                document.getElementById('noHistory').style.display = 'block';
+            }
+
+            // Activity stats
+            const completedActivities = user.completedActivities || [];
+            document.getElementById('activitiesCount').textContent = completedActivities.length;
+            
+            // Calculate streak
+            const streak = calculateStreak(surveyHistory);
+            document.getElementById('activityStreak').textContent = streak + ' days';
+
+            // Load activity timeline
+            loadActivityTimeline(surveyHistory, completedActivities);
+        }
+
+        function updateProgressRing(score) {
+            const circle = document.getElementById('progressCircle');
+            const circumference = 2 * Math.PI * 70; // r=70
+            const offset = circumference - (score / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function calculateStreak(history) {
+            if (history.length === 0) return 0;
+            
+            let streak = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const sortedDates = history.map(h => {
+                const d = new Date(h.date);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime();
+            }).sort((a, b) => b - a);
+            
+            for (let i = 0; i < sortedDates.length; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(checkDate.getDate() - i);
+                if (sortedDates.includes(checkDate.getTime())) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        function loadTrendsChart(history) {
+            const ctx = document.getElementById('trendsChart');
+            if (!ctx) return;
+            
+            const labels = history.slice(-10).map(h => new Date(h.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const data = history.slice(-10).map(h => h.score);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Wellness Score',
+                        data: data,
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: 'rgb(102, 126, 234)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadHistoryTable(history) {
+            const tbody = document.getElementById('historyTable');
+            tbody.innerHTML = '';
+            
+            history.slice().reverse().slice(0, 10).forEach((entry, index) => {
+                const score = entry.score;
+                const prevScore = index < history.length - 1 ? history[history.length - 2 - index].score : score;
+                const trend = score > prevScore ? 'up' : score < prevScore ? 'down' : 'same';
+                
+                let statusClass = 'bg-green-100 text-green-700';
+                let statusLabel = 'Excellent';
+                if (score < 40) {
+                    statusClass = 'bg-red-100 text-red-700';
+                    statusLabel = 'Needs Attention';
+                } else if (score < 60) {
+                    statusClass = 'bg-orange-100 text-orange-700';
+                    statusLabel = 'Fair';
+                } else if (score < 80) {
+                    statusClass = 'bg-yellow-100 text-yellow-700';
+                    statusLabel = 'Good';
+                }
+                
+                const trendIcon = trend === 'up' ? '<i class="fas fa-arrow-up text-green-500"></i>' :
+                                 trend === 'down' ? '<i class="fas fa-arrow-down text-red-500"></i>' :
+                                 '<i class="fas fa-minus text-gray-400"></i>';
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 text-gray-700">${new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                        <td class="p-4 font-semibold text-gray-800">${score}/100</td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
+                                ${statusLabel}
+                            </span>
+                        </td>
+                        <td class="p-4">${trendIcon}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadActivityTimeline(assessments, activities) {
+            const timeline = document.getElementById('activityTimeline');
+            const noActivity = document.getElementById('noActivity');
+            
+            const allEvents = [];
+            
+            // Add assessments
+            assessments.forEach(a => {
+                allEvents.push({
+                    date: new Date(a.date),
+                    type: 'assessment',
+                    icon: 'fa-clipboard-check',
+                    color: 'text-purple-600',
+                    title: 'Completed Assessment',
+                    description: `Score: ${a.score}/100`
+                });
+            });
+            
+            // Add activities
+            activities.forEach(a => {
+                allEvents.push({
+                    date: new Date(a.completedAt),
+                    type: 'activity',
+                    icon: 'fa-check-circle',
+                    color: 'text-green-600',
+                    title: 'Completed Activity',
+                    description: a.activityId.replace(/([A-Z])/g, ' $1').trim()
+                });
+            });
+            
+            // Sort by date (newest first)
+            allEvents.sort((a, b) => b.date - a.date);
+            
+            if (allEvents.length > 0) {
+                timeline.innerHTML = '';
+                allEvents.slice(0, 10).forEach(event => {
+                    timeline.innerHTML += `
+                        <div class="timeline-item">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas ${event.icon} ${event.color}"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">${event.title}</p>
+                                    <p class="text-sm text-gray-600">${event.description}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${event.date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                noActivity.style.display = 'none';
+            } else {
+                noActivity.style.display = 'block';
+            }
+        }
+
+        function openPhotoUpload() {
+            document.getElementById('photoUpload').click();
+        }
+
+        function updatePhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePhoto').src = e.target.result;
+                
+                // Update user data
+                const user = getCurrentUser();
+                if (user) {
+                    user.avatar = e.target.result;
+                    localStorage.setItem('mindcare_current_user', JSON.stringify(user));
+                    
+                    // Show success message
+                    showNotification('Profile photo updated successfully!');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetPassword() {
+            const email = prompt('Enter your email address to reset password:');
+            if (email) {
+                showNotification('Password reset link sent to ' + email);
+            }
+        }
+
+        function logoutUser() {
+            if (confirm('Are you sure you want to logout?')) {
+                logout();
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
